@@ -1,32 +1,5 @@
 #My final Maine File
-# content from kids can code: http://kidscancode.org/blog/
-'''
-Innovation:
-- Change Controls into a direction and magnitude style (Complete)
-- Change the Character into a assymetrical character (triangle) in orderr to allow 
-better control by player (Complete)
-- Make the boundaries looping for Enemies and PLayer, but not bullets to keep 
-bullet count down (Complete)
-- Create a shoot function to fire rectangles using the player current position and 
-direction  (Complete)
-- Make collisions between bullet and enemies (Complete)
-- Create Death Function to kill player if enemie touches (Complete)
-Goals: 
-    Kill all the enemies
-    Don't Die
-Rules: 
-    W- Forward (in what direction player is facing)
-    A and D- Rotate Player
-    SPACe (Hold)- Shoots projectiles to kill enemies
-    Touching a enemie kills you
-Feedback: 
-    Score Count
-    Death Popup
-Freedom:
-    Movement
-    Shooting
-    Looping Boundaries
-'''
+
 # import libraries and modules
 from os import kill
 from pickle import FALSE, TRUE
