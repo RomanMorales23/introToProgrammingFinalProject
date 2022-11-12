@@ -107,8 +107,7 @@ class Player(Sprite):
             global DEAD
             DEAD = 1
         #Rotates the sprite according to the direction control
-        self.image = pg.transform.rotate(self.original_image, -self.direction 
-*57.2958)
+        self.image = pg.transform.rotate(self.original_image, -self.direction w*57.2958)
         self.rect = self.image.get_rect(center=self.rect.center)
         
         #Resets Acceloration to zero so it does not become additive
