@@ -47,8 +47,7 @@ class Player(Sprite):
         self.image = pg.Surface((50, 20), pg.SRCALPHA)
         self.image.fill(BLACK)
         self.original_image = self.image
-        self.rect = pg.draw.polygon(self.image, (WHITE), ((0, 0), (0, 20), (50, 
-10)))
+        self.rect = pg.draw.polygon(self.image, (WHITE), ((0, 0), (0, 20), (50, 10)))
         self.rect.center = (WIDTH/2, HEIGHT/2)
         self.pos = vec(WIDTH/2, HEIGHT/2)
         self.vel = vec(0,0)
@@ -80,7 +79,7 @@ class Player(Sprite):
             global DEAD
             DEAD = 1
         #Rotates the sprite according to the direction control
-        self.image = pg.transform.rotate(self.original_image, -self.direction w*57.2958)
+        self.image = pg.transform.rotate(self.original_image, -self.direction *57.2958)
         self.rect = self.image.get_rect(center=self.rect.center)
         
         #Resets Acceloration to zero so it does not become additive
@@ -120,8 +119,7 @@ class Projectile(Sprite):
         
         # Makes the velocity equal to the player direction, but in terms of x and y
         #Then multiplied by the setting of bullet speed
-        self.vel = vec(math.cos(player.direction) * 
-BULLET_SPEED,math.sin(player.direction)* BULLET_SPEED)
+        self.vel = vec(math.cos(player.direction) * BULLET_SPEED,math.sin(player.direction)* BULLET_SPEED)
         self.acc = vec(0,0)
    
     def update(self):
@@ -186,8 +184,7 @@ enemies = pg.sprite.Group()
 player = Player(0)
 #From Mr. Cozort to instantiate multiple enemies
 for i in range(30):
-    m = Enemy(randint(0,WIDTH), randint(0,HEIGHT), 20, 20, 
-(RandColor(),RandColor(),RandColor()), 1, random.uniform(0,360))
+    m = Enemy(randint(0,WIDTH), randint(0,HEIGHT), 20, 20, (RandColor(),RandColor(),RandColor()), 1, random.uniform(0,360))
     all_sprites.add(m)
     enemies.add(m)
     Enemy.add(m)
@@ -197,6 +194,7 @@ all_sprites.add(player, bullets, enemies)
 # Game loop
 running = True
 while running:
+    
     # keep the loop running using clock
     clock.tick(FPS)
     for event in pg.event.get():
