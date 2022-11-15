@@ -1,32 +1,6 @@
 #My final Maine File
 # content from kids can code: http://kidscancode.org/blog/
-'''
-Innovation:
-- Change Controls into a direction and magnitude style (Complete)
-- Change the Character into a assymetrical character (triangle) in orderr to allow 
-better control by player (Complete)
-- Make the boundaries looping for Enemies and PLayer, but not bullets to keep 
-bullet count down (Complete)
-- Create a shoot function to fire rectangles using the player current position and 
-direction  (Complete)
-- Make collisions between bullet and enemies (Complete)
-- Create Death Function to kill player if enemie touches (Complete)
-Goals: 
-    Kill all the enemies
-    Don't Die
-Rules: 
-    W- Forward (in what direction player is facing)
-    A and D- Rotate Player
-    SPACe (Hold)- Shoots projectiles to kill enemies
-    Touching a enemie kills you
-Feedback: 
-    Score Count
-    Death Popup
-Freedom:
-    Movement
-    Shooting
-    Looping Boundaries
-'''
+
 # import libraries and modules
 from os import kill
 from pickle import FALSE, TRUE
@@ -35,28 +9,9 @@ import math
 from pygame.sprite import Sprite
 import random
 from random import randint
+from Settings import *
 #reassigns name to Vector2
 vec = pg.math.Vector2
-# game settings 
-WIDTH = 1280
-HEIGHT = 720
-FPS = 30
-# player settings
-PLAYER_GRAV = 0.0
-PLAYER_FRIC = 0.01
-PLAYER_TURN_RATE = 0.2 #radians
-SPEED = 1
-FRAME = 1
-BULLET_SPEED = 20
-SCORE = 0
-BULLET_PEN = FALSE
-DEAD = 0
-# define colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
 #From Mr. Cozort  
 def draw_text(text, size, color, x, y):
         font_name = pg.font.match_font('Impact')
