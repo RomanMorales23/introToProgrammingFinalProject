@@ -1,15 +1,30 @@
-#My final Maine File
-# content from kids can code: http://kidscancode.org/blog/
 
-# import libraries and modules
+###########################################IMPORTING STUFF################################
+
+#Importing Misc. libraries and modules
+import sys
 from os import kill
 from pickle import FALSE, TRUE
 import pygame as pg
-import math
+
+
+#Importing Pygame Libraries
+from pygame import *
 from pygame.sprite import Sprite
+from pygame.locals import *
+
+
+#Importing Math Related Libraries
+import math
 import random
 from random import randint
 from Settings import *
+
+
+
+
+
+
 #reassigns name to Vector2
 vec = pg.math.Vector2
 #From Mr. Cozort  
@@ -29,8 +44,7 @@ class Player(Sprite):
         self.image = pg.Surface((50, 20), pg.SRCALPHA)
         self.image.fill(BLACK)
         self.original_image = self.image
-        self.rect = pg.draw.polygon(self.image, (WHITE), ((0, 0), (0, 20), (50, 
-10)))
+        self.rect = pg.draw.polygon(self.image, (WHITE), ((0, 0), (0, 20), (50, 10)))
         self.rect.center = (WIDTH/2, HEIGHT/2)
         self.pos = vec(WIDTH/2, HEIGHT/2)
         self.vel = vec(0,0)
@@ -38,32 +52,35 @@ class Player(Sprite):
         self.direction = math.radians(direction)
     #Controls altered to use a direction and magnitude instead of individual x and y inputs 
     def controls(self):
-        keys = pg.key.get_pressed()
-        if keys[pg.K_a]:
-            self.direction -= PLAYER_TURN_RATE
-        if keys[pg.K_d]:
-            self.direction += PLAYER_TURN_RATE
-        if keys[pg.K_w]:
-            #Alters x and y acceloration coefficients based on the direcitonal angle  to simulate an acceleration at said angle
-           self.acc.y = SPEED * math.sin(self.direction)
-           self.acc.x = SPEED * math.cos(self.direction)
-        if keys[pg.K_SPACE]:
-            # Thanks Andrew for the Delay 
-            if FRAME % 5 == 0:
-                pew = (Projectile(10,10))
-                bullets.add(pew)
-                all_sprites.add(pew)
-                
-     
+        pass
+
+        
+        # keys = pg.key.get_pressed()
+        # if keys[pg.K_a]:
+        #     self.direction -= PLAYER_TURN_RATE
+        # if keys[pg.K_d]:
+        #     self.direction += PLAYER_TURN_RATE
+        # if keys[pg.K_w]:
+        #     #Alters x and y acceloration coefficients based on the direcitonal angle  to simulate an acceleration at said angle
+        #    self.acc.y = SPEED * math.sin(self.direction)
+        #    self.acc.x = SPEED * math.cos(self.direction)
+        # if keys[pg.K_SPACE]:
+        #     # Thanks Andrew for the Delay 
+        #     if FRAME % 5 == 0:
+        #         pew = (Projectile(10,10))
+        #         bullets.add(pew)
+        #         all_sprites.add(pew)
+
+
     def update(self):
         if pg.sprite.spritecollide(self, enemies, FALSE):
-            print("DEATH")
-            self.kill()
-            global DEAD
-            DEAD = 1
+            if CAN_DIE:
+                print("DEATH")
+                self.kill()
+                global DEAD
+                DEAD = 1
         #Rotates the sprite according to the direction control
-        self.image = pg.transform.rotate(self.original_image, -self.direction 
-*57.2958)
+        self.image = pg.transform.rotate(self.original_image, -self.direction *57.2958)
         self.rect = self.image.get_rect(center=self.rect.center)
         
         #Resets Acceloration to zero so it does not become additive
@@ -156,6 +173,16 @@ class Enemy(Sprite):
 # init pygame and create a window
 pg.init()
 pg.mixer.init()
+
+#Init for Joystick Inputs & Prints out devices
+
+pg.joystick.init()
+print("Joysticks Initialized")
+joysticks = [pg.joystick.Joystick(i) for i in range(pg.joystick.get_count())]
+for joystick in joysticks:
+    print(joystick.get_name())
+
+#Create Display
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 pg.display.set_caption("My Game...")
 clock = pg.time.Clock()
@@ -180,6 +207,19 @@ all_sprites.add(player, bullets, enemies)
 # Game loop
 running = True
 while running:
+    if event == JOYAXISMOTION:
+        print("HELLO")
+    if event == JOYBUTTONDOWN:
+        print(event)
+    if event == JOYBUTTONUP:
+        print(event)
+        pg.quit()
+    if event == JOYDEVICEADDED:
+        joysticks = [pg.joystick.Joystick(i) for i in range(pg.joystick.get_count())]
+        for joystick in joysticks:
+            print(joystick.get_name())
+    if event == JOYDEVICEREMOVED:
+        joysticks = [pg.joystick.Joystick(i) for i in range(pg.joystick.get_count())]
     # keep the loop running using clock
     clock.tick(FPS)
     for event in pg.event.get():

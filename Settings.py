@@ -1,7 +1,7 @@
 # game settings 
 WIDTH = 1280
 HEIGHT = 720
-FPS = 30
+FPS = 120
 # player settings
 PLAYER_GRAV = 0.0
 PLAYER_FRIC = 0.01
@@ -10,6 +10,7 @@ SPEED = 1
 FRAME = 1
 BULLET_SPEED = 20
 BULLET_PEN = False
+CAN_DIE = False
 
 # define colors
 WHITE = (255, 255, 255)
