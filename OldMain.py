@@ -207,25 +207,26 @@ all_sprites.add(player, bullets, enemies)
 # Game loop
 running = True
 while running:
-    if event == JOYAXISMOTION:
-        print("HELLO")
-    if event == JOYBUTTONDOWN:
-        print(event)
-    if event == JOYBUTTONUP:
-        print(event)
-        pg.quit()
-    if event == JOYDEVICEADDED:
-        joysticks = [pg.joystick.Joystick(i) for i in range(pg.joystick.get_count())]
-        for joystick in joysticks:
-            print(joystick.get_name())
-    if event == JOYDEVICEREMOVED:
-        joysticks = [pg.joystick.Joystick(i) for i in range(pg.joystick.get_count())]
-    # keep the loop running using clock
-    clock.tick(FPS)
-    for event in pg.event.get():
-        # check for closed window
-        if event.type == pg.QUIT:
-            running = False
+    for event in event():
+        if event == JOYAXISMOTION:
+            print("HELLO")
+        if event == JOYBUTTONDOWN:
+            print(event)
+        if event == JOYBUTTONUP:
+            print(event)
+            pg.quit()
+        if event == JOYDEVICEADDED:
+            joysticks = [pg.joystick.Joystick(i) for i in range(pg.joystick.get_count())]
+            for joystick in joysticks:
+                print(joystick.get_name())
+        if event == JOYDEVICEREMOVED:
+            joysticks = [pg.joystick.Joystick(i) for i in range(pg.joystick.get_count())]
+        # keep the loop running using clock
+        clock.tick(FPS)
+        for event in pg.event.get():
+            # check for closed window
+            if event.type == pg.QUIT:
+                running = False
     
     ############ Update ##############
     # update all sprites
