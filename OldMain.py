@@ -73,7 +73,7 @@ class Player(Sprite):
 
 
     def update(self):
-        if pg.sprite.spritecollide(self, enemies, FALSE):
+        if pg.sprite.spritecollide(self, FALSE):
             if CAN_DIE:
                 print("DEATH")
                 self.kill()
@@ -86,7 +86,7 @@ class Player(Sprite):
         #Resets Acceloration to zero so it does not become additive
         self.acc = vec(0,0)
         
-        #considering implementing a collision later on...
+        #considerinag implementing a collision later on...
         '''hits = pg.sprite.spritecollide(self, all_platforms, False)
         if hits:
             print("I've collided")'''
@@ -207,7 +207,8 @@ all_sprites.add(player, bullets, enemies)
 # Game loop
 running = True
 while running:
-    for event in event():
+    clock.tick(FPS)
+    for event in pg.event.get():
         if event == JOYAXISMOTION:
             print("HELLO")
         if event == JOYBUTTONDOWN:

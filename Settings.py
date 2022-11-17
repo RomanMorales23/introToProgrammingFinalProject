@@ -1,7 +1,7 @@
 # game settings 
 WIDTH = 1280
 HEIGHT = 720
-FPS = 60
+FPS = 10
 # player settings
 PLAYER_GRAV = 0.0
 PLAYER_FRIC = 0.01
