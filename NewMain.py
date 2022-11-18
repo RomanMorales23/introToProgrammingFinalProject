@@ -64,10 +64,22 @@ class Player(Sprite):
         if abs(JOYSTICK_Location_Left[0]) > DEADZONE:
             self.vel.x = JOYSTICK_Location_Left[0] * SPEED
         if abs(JOYSTICK_Location_Right[0]) > DEADZONE:
-            pass
-        if abs(JOYSTICK_Location_Right[0]) > DEADZONE:
-            pass
-        
+            if JOYSTICK_Location_Right[0] > 0:
+                self.direction = math.atan((JOYSTICK_Location_Right[1] / JOYSTICK_Location_Right[0]))
+            elif JOYSTICK_Location_Right[0] < 0:
+                self.direction = math.pi + math.atan((JOYSTICK_Location_Right[1] / JOYSTICK_Location_Right[0]))
+    def shoot():
+        print("SHOOT")
+        pew = (Projectile(10,10))
+        bullets.add(pew)
+        all_sprites.add(pew)
+        #Prevents firing for the first second
+        '''if FRAME > 30:
+            # Thanks Andrew for the Delay 
+            if FRAME % 3 == 0:
+                pew = (Projectile(10,10))
+                bullets.add(pew)
+                all_sprites.add(pew)  '''     
         
         
         '''keys = pg.key.get_pressed()
@@ -253,7 +265,7 @@ while running:
         if event.type == JOYBUTTONDOWN:
             print(event)
             if event.button == 0:
-                pg.quit()
+                Player.shoot()
         if event.type == JOYBUTTONUP:
             print(event)
         if event.type == JOYAXISMOTION:
