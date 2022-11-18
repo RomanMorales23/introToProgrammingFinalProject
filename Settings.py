@@ -28,4 +28,5 @@ BLUE = (0, 0, 255)
 DEAD = 0
 SCORE = 0
 FRAME = 1
+SHOT_TIMER = 0
 

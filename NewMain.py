@@ -59,6 +59,7 @@ class Player(Sprite):
         self.direction = math.radians(direction)
     #Controls altered to use a direction and magnitude instead of individual x and y inputs 
     def controls(self):
+        print(event)
         if abs(JOYSTICK_Location_Left[1]) > DEADZONE:
             self.vel.y = JOYSTICK_Location_Left[1] * SPEED
         if abs(JOYSTICK_Location_Left[0]) > DEADZONE:
@@ -160,6 +161,7 @@ class Projectile(Sprite):
         self.acc = vec(0,0)
    
     def update(self):
+        SHOT_TIMER += 1
         if self.vel.y > 0:
             if self.pos.y > HEIGHT: 
                 self.pos.y = 0
@@ -269,6 +271,9 @@ while running:
         if event.type == JOYBUTTONUP:
             print(event)
         if event.type == JOYAXISMOTION:
+            if event.axis == 5:
+                    Player.shoot()
+
             #Sorts out which Joystick the Value is comming from 0 & 1 is left joystick axis while 2 & 3 is right
             if event.axis == 0 or event.axis == 1:
                 JOYSTICK_Location_Left[event.axis] = event.value
