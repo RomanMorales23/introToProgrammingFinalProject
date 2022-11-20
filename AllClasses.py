@@ -1,13 +1,7 @@
-'''
-FINAL PROJECT
-
-    This project is going to be a 2 player game which uses Stadia Controllers as Input. I w
-'''
 #Importing Misc. libraries and modules
 import sys
 from os import kill
 from pickle import FALSE, TRUE
-
 
 #Importing Pygame Libraries
 import pygame as pg
@@ -23,8 +17,7 @@ from random import randint
 
 #Created Libraries
 from Settings import *
-from AllClasses import *
-
+from NewMain import *
 
 #Name Reassignments
 vec = pg.math.Vector2
@@ -33,19 +26,6 @@ vec = pg.math.Vector2
 vec = pg.math.Vector2
 
 
-#From M. Cozort  
-def draw_text(text, size, color, x, y):
-        font_name = pg.font.match_font('Impact')
-        font = pg.font.Font(font_name, size)
-        text_surface = font.render(text, True, color)
-        text_rect = text_surface.get_rect()
-        text_rect.midtop = (x, y)
-        screen.blit(text_surface, text_rect)
-def RandColor():
-    return random.randint(0,255)
-
-
-###############################################Class Player One (WSD SPACE)###############################################
 class Player(Sprite):
     def __init__(self,direction):
         Sprite.__init__(self)
@@ -71,12 +51,31 @@ class Player(Sprite):
                 self.direction = math.pi + math.atan((JOYSTICK_Location_Right[1] / JOYSTICK_Location_Right[0]))
     def shoot():
         global SHOT_TIMER
-        if SHOT_TIMER > 5:
+        if SHOT_TIMER > 10:
             print("I FIRED")
             pew = (Projectile(10,10))
             bullets.add(pew)
             all_sprites.add(pew)
-            SHOT_TIMER = 0        
+            SHOT_TIMER = 0     
+        
+        
+        '''keys = pg.key.get_pressed()
+        if keys[pg.K_a]:
+            self.direction -= PLAYER_TURN_RATE
+        if keys[pg.K_d]:
+            self.direction += PLAYER_TURN_RATE
+        if keys[pg.K_w]:
+            #Alters x and y acceloration coefficients based on the direcitonal angle  to simulate an acceleration at said angle
+           self.acc.y = SPEED * math.sin(self.direction)
+           self.acc.x = SPEED * math.cos(self.direction)
+        if keys[pg.K_SPACE]:
+            #Prevents firing for the first second
+            if FRAME > 30:
+                # Thanks Andrew for the Delay 
+                if FRAME % 3 == 0:
+                    pew = (Projectile(10,10))
+                    bullets.add(pew)
+                    all_sprites.add(pew)'''   
     def update(self):
         if pg.sprite.spritecollide(self, enemies, FALSE):
             #Prevents Player Death for the first second
@@ -109,8 +108,7 @@ class Player(Sprite):
                 self.pos.x = 0
         elif self.vel.x < 0:
             if self.pos.x < 0:
-                self.pos.x = WIDTH       
-        
+                self.pos.x = WIDTH    
 
 ###############################################Platfroms###############################################
 class Platform(Sprite):
@@ -131,20 +129,13 @@ class Projectile(Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (player.pos.x, player.pos.y)
         self.pos = vec(player.pos.x, player.pos.y)
-        self.TIME_ALIVE = 0
+        
         # Makes the velocity equal to the player direction, but in terms of x and y
         #Then multiplied by the setting of bullet speed
         self.vel = vec(math.cos(player.direction) * BULLET_SPEED,math.sin(player.direction)* BULLET_SPEED)
         self.acc = vec(0,0)
    
     def update(self):
-        #kills bullet after Time Alive 
-        if self.TIME_ALIVE > BULLET_LIFESPAN:
-            self.kill()
-            print("Bullet DIED")
-        self.TIME_ALIVE += 1
-        print(self.TIME_ALIVE)
-
         if self.vel.y > 0:
             if self.pos.y > HEIGHT: 
                 self.pos.y = 0
@@ -206,16 +197,6 @@ class Enemy(Sprite):
         self.rect.y += self.speed * math.sin(self.direction)
         self.rect.x += self.speed * math.cos(self.direction)
 
-
-
-
-# init pygame and create a window
-pg.init()
-pg.mixer.init()
-screen = pg.display.set_mode((WIDTH, HEIGHT))
-pg.display.set_caption("My Game...")
-clock = pg.time.Clock()
-  
 # create a group for all sprites
 all_sprites = pg.sprite.Group()
 all_platforms = pg.sprite.Group()
@@ -227,7 +208,7 @@ player = Player(0)
 
 #From Mr. Cozort to instantiate multiple enemies
 for i in range(30):
-    m = Enemy(randint(0,WIDTH), randint(0,HEIGHT), 20, 20, (RandColor(),RandColor(),RandColor()), 1, random.uniform(0,360))
+    m = Enemy(randint(0,WIDTH), randint(0,HEIGHT), 20, 20, (), 1, random.uniform(0,360))
     all_sprites.add(m)
     enemies.add(m)
     Enemy.add(m)
@@ -236,81 +217,4 @@ for i in range(30):
 all_sprites.add(player, bullets, enemies)
 # add platform to all sprites group
 
-
-
-
-
-# Game loop
-running = True
-while running:
-    # keep the loop running using clock
-    clock.tick(FPS)
-
-    for event in pg.event.get():
-        if event.type == JOYBUTTONDOWN:
-            if event.button == 0:
-                Player.shoot()
-        if event.type == JOYBUTTONUP:
-            pass
-        if event.type == JOYAXISMOTION:
-            if event.axis == 5:
-                if event.value == 1:
-                    print(event.value)
-                    Player.shoot()
-
-            #Sorts out which Joystick the Value is comming from 0 & 1 is left joystick axis while 2 & 3 is right
-            if event.axis == 0 or event.axis == 1:
-                JOYSTICK_Location_Left[event.axis] = event.value
-            if event.axis == 2 or event.axis == 3:
-                JOYSTICK_Location_Right[event.axis - 2] = event.value
-        if event.type == JOYHATMOTION:
-            pass
-        if event.type == JOYDEVICEADDED:
-            joysticks = [pg.joystick.Joystick(i) for i in range(pg.joystick.get_count())]
-            for joystick in joysticks:
-                print(joystick.get_name())
-        if event.type == JOYDEVICEREMOVED:
-            joysticks = [pg.joystick.Joystick(i) for i in range(pg.joystick.get_count())]
-        if event.type == QUIT:
-            pg.quit()
-            sys.exit()
-        if event.type == KEYDOWN:
-            if event.key == K_ESCAPE:
-                pg.quit()
-                sys.exit()
-        # check for closed window
-        if event.type == pg.QUIT:
-            running = False
-    
-    ############ Update ##############
-    # update all sprites
-    all_sprites.update()
-    all_platforms.update()
-
-
-    #Player Looping Boundaries as well as Platform Hits        
         
-    '''saving code for later jut in case I decide I need it 
-
-        hits = pg.sprite.spritecollide(player, all_platforms, False)    
-        if hits:
-            player.rect.top = hits[0].rect.bottom
-            player.vel.y = 1'''
-
-
-  
-    ########## Draw ################
-    # draw the background screen
-    screen.fill(BLACK)
-    # draw all sprites
-    all_sprites.draw(screen)
-    #Text 
-    draw_text("SCORE:     " + str(SCORE), 20, WHITE, WIDTH/2, 20)
-    if DEAD == 1:
-        draw_text("YOU DIED :|", 100, WHITE, WIDTH/2, HEIGHT/2)
-    # buffer - after drawing everything, flip display
-    pg.display.flip()
-    
-    FRAME += 1
-    SHOT_TIMER += 1
-pg.quit()
