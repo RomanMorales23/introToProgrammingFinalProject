@@ -1,29 +1,29 @@
 '''
-FINAL PROJECT
+Citations: 
 
-    This project is going to be a 2 player game which uses Stadia Controllers as Input. I w
+Controller Input - DaFluffyPotateo on YT: https://www.youtube.com/watch?v=Hp0M8iExfDc&ab_channel=DaFluffyPotato
+Pygame Docuementation - https://www.pygame.org/docs/
+Various Commands - Mr. Cozort 
 '''
+
 #Importing Misc. libraries and modules
 import sys
 from os import kill
-from pickle import FALSE, TRUE
 
 
 #Importing Pygame Libraries
 import pygame as pg
-#from pygame import *
 from pygame.sprite import Sprite
 from pygame.locals import *
 
 
-#Importing Math Related Libraries
+#Importing Math Related Libraries for input and vector Calculations 
 import math
 import random
 from random import randint
 
 #Created Libraries
 from Settings import *
-from AllClasses import *
 
 
 #Name Reassignments
@@ -60,6 +60,19 @@ class Player(Sprite):
         self.direction = math.radians(direction)
     #Controls altered to use a direction and magnitude instead of individual x and y inputs 
     def controls(self):
+        keys= pg.key.get_pressed()
+
+            
+        if keys[pg.K_a]:
+            self.vel.x = -SPEED * 10
+        if keys[pg.K_d]:
+            self.vel.x = SPEED * 10
+        if keys[pg.K_w]:
+            self.vel.y = -SPEED * 10
+        if keys[pg.K_s]:
+            self.vel.y = SPEED *10
+
+
         if abs(JOYSTICK_Location_Left[1]) > DEADZONE:
             self.vel.y = JOYSTICK_Location_Left[1] * SPEED
         if abs(JOYSTICK_Location_Left[0]) > DEADZONE:
@@ -78,7 +91,10 @@ class Player(Sprite):
             all_sprites.add(pew)
             SHOT_TIMER = 0        
     def update(self):
-        if pg.sprite.spritecollide(self, enemies, FALSE):
+        if pg.sprite.spritecollide(self, walls, False):
+            print("GAY")
+            self.vel.xy = (0,0)
+        if pg.sprite.spritecollide(self, bullets, False):
             #Prevents Player Death for the first second
             if FRAME > 30:
                 if CAN_DIE == True:
@@ -98,18 +114,29 @@ class Player(Sprite):
         self.vel += self.acc
         self.pos += self.vel + 0.5 * self.acc
         self.rect.center = self.pos
-        if self.vel.y > 0:
+        if self.pos.x > WIDTH:
+            self.pos.x = WIDTH
+        if self.pos.y > HEIGHT:
+            self.pos.y = HEIGHT
+        if self.pos.x < 0:
+            self.pos.x = 0
+        if self.pos.y < 0:
+            self.pos.y = 0
+
+
+
+        '''if self.vel.y > 0:
             if self.pos.y > HEIGHT: 
-                self.pos.y = 0
+                self.vel.y = 0
         elif self.vel.y < 0:
             if self.pos.y  < 0:
-                self.pos.y = HEIGHT
+                self.vel.y = 0
         if self.vel.x > 0:
             if self.pos.x > WIDTH:
-                self.pos.x = 0
+                self.vel.x = 0
         elif self.vel.x < 0:
-            if self.pos.x < 0:
-                self.pos.x = WIDTH       
+            if self.vel.x < 0:
+                self.pos.x = 0'''       
         
 
 ###############################################Platfroms###############################################
@@ -157,12 +184,6 @@ class Projectile(Sprite):
         elif self.vel.x < 0:
             if self.pos.x < 0:
                 self.pos.x = WIDTH 
-        #If the bullet hits a enemy, the enemy is removed
-        hit = pg.sprite.spritecollide(self, enemies, TRUE)
-        if hit:
-            #Not entirely sure why I had to mark this as global here, even though it is defined earlier...
-            global SCORE
-            SCORE +=1 
         #Resets Acceleration to zero so it does not become additive
         self.acc = vec(0,0) 
         self.rect = self.image.get_rect(center=self.rect.center)
@@ -172,40 +193,34 @@ class Projectile(Sprite):
         self.pos += self.vel + 0.5 * self.acc
         self.rect.center = self.pos
 
-###############################################Enemy###############################################
+###############################################Walls###############################################
 
-# Coutesy of Mr. Cozort
-class Enemy(Sprite):
-    def __init__(self, x, y, w, h, color, health, direction):
+#Courtesy of Andrew:
+class Wall(Sprite):
+    def __init__(self, x, y, iterations):
         Sprite.__init__(self)
-        self.image = pg.Surface((w, h))
-        self.color = color
-        self.image.fill(color)
+        self.image = pg.Surface((20, 20))
+        self.image.fill(GREY)
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.speed = 5
-        self.health = health
-        self.initialized = False
-        self.direction = math.radians(direction) 
-
+        self.rect.center = (x, y)
+        self.x = x
+        self.y = y
+        self.iterations = iterations
+    
     def update(self):
-        if BULLET_PEN:
-        #If the bullet hits a enemy, the bullet gets removed (AKA no penetration)
-            pg.sprite.spritecollide(self, bullets, TRUE)
-        #Looping Boundaries for Enemies 
-        if self.rect.top > HEIGHT:
-            self.rect.bottom = 0
-        elif self.rect.bottom < 0:
-            self.rect.top = HEIGHT
-        if self.rect.left > WIDTH:
-            self.rect.right = 0
-        elif self.rect.right < 0:
-            self.rect.left = WIDTH
-        
-        self.rect.y += self.speed * math.sin(self.direction)
-        self.rect.x += self.speed * math.cos(self.direction)
-
+        prevx = self.x
+        prevy = self.y
+        if self.iterations == 1:
+            for i in range(5):
+                x = prevx + random.choice([-20, 0, 20])
+                y = prevy + random.choice([-20, 0, 20])
+                prevx = x
+                prevy = y
+                wall = Wall(x, y, 0)
+                wall_list.append(wall)
+                walls.add(wall)
+                all_sprites.add(wall)
+            self.kill()
 
 
 
@@ -220,24 +235,27 @@ clock = pg.time.Clock()
 all_sprites = pg.sprite.Group()
 all_platforms = pg.sprite.Group()
 bullets = pg.sprite.Group()
-enemies = pg.sprite.Group()
+walls = pg.sprite.Group()
+
 
 # instantiate classes
 player = Player(0)
 
 #From Mr. Cozort to instantiate multiple enemies
-for i in range(30):
-    m = Enemy(randint(0,WIDTH), randint(0,HEIGHT), 20, 20, (RandColor(),RandColor(),RandColor()), 1, random.uniform(0,360))
-    all_sprites.add(m)
-    enemies.add(m)
-    Enemy.add(m)
 # add player to all sprites grousp
 
-all_sprites.add(player, bullets, enemies)
+all_sprites.add(player, bullets)
 # add platform to all sprites group
 
-
-
+#Walls Option
+if WALLS == True:  
+    for i in range(AMOUNT_WALLS): 
+        x = random.randint(0, WIDTH/20 - 1) * 20 + 10
+        y = random.randint(0, HEIGHT/20 - 1) * 20 + 10
+        wall = Wall(x, y, 1)
+        wall_list.append(wall)
+        walls.add(wall)
+        all_sprites.add(wall)
 
 
 # Game loop
@@ -253,6 +271,7 @@ while running:
         if event.type == JOYBUTTONUP:
             pass
         if event.type == JOYAXISMOTION:
+            #Trigger is Considered an Axis
             if event.axis == 5:
                 if event.value == 1:
                     print(event.value)
@@ -289,7 +308,6 @@ while running:
 
 
     #Player Looping Boundaries as well as Platform Hits        
-        
     '''saving code for later jut in case I decide I need it 
 
         hits = pg.sprite.spritecollide(player, all_platforms, False)    
