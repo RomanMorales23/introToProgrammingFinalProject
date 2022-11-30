@@ -46,33 +46,28 @@ def RandColor():
 
 ###############################################Class Player One (WSD SPACE)###############################################
 class Player(Sprite):
-    def __init__(self,direction):
+    def __init__(self,direction, player_num):
         Sprite.__init__(self)        
-        '''self.image = pg.Surface((50, 20), pg.SRCALPHA)
-        self.image.fill(BLACK)
-        self.original_image = self.image
-        self.rect = pg.draw.polygon(self.image, (WHITE), ((0, 0), (0, 20), (50, 10)))
-        self.rect.center = (WIDTH/2, HEIGHT/2)
-        self.pos = vec(WIDTH/2, HEIGHT/2)
-        self.vel = vec(0,0)
-        self.acc = vec(0,0)
-        self.direction = math.radians(direction)'''
-
         self.image = pg.Surface((25, 19))
-        self.original_image = player1_img
+        if player_num ==1: 
+            self.original_image = player1_img
+        elif player_num == 2:
+            self.original_image = player2_img
         self.original_image = pg.transform.scale(player1_img, (25, 19))
         self.original_image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH/2, HEIGHT/2)
-        self.pos = vec(WIDTH/2, HEIGHT/2)
+        if player_num ==1: 
+            self.pos = vec(20,20)
+        elif player_num == 2:
+            self.pos = vec(WIDTH - 20, HEIGHT - 20)
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.direction = math.radians(direction)
     #Controls altered to use a direction and magnitude instead of individual x and y inputs 
     def controls(self):
-        keys= pg.key.get_pressed()
-
-
+        '''keys= pg.key.get_pressed()
+        #Keyboard Controlls for when I forget controllers
         if keys[pg.K_a]:
             self.vel.x = -SPEED * 10
         if keys[pg.K_d]:
@@ -80,9 +75,7 @@ class Player(Sprite):
         if keys[pg.K_w]:
             self.vel.y = -SPEED * 10
         if keys[pg.K_s]:
-            self.vel.y = SPEED *10
-
-
+            self.vel.y = SPEED *10'''
         if abs(JOYSTICK_Location_Left[1]) > DEADZONE:
             self.vel.y = JOYSTICK_Location_Left[1] * SPEED
         if abs(JOYSTICK_Location_Left[0]) > DEADZONE:
@@ -96,7 +89,7 @@ class Player(Sprite):
         global SHOT_TIMER
         if SHOT_TIMER > 5:
             print("I FIRED")
-            pew = (Projectile(10,10))
+            pew = (Projectile(10,3, 1))
             bullets.add(pew)
             all_sprites.add(pew)
             SHOT_TIMER = 0        
@@ -123,7 +116,7 @@ class Player(Sprite):
         self.vel += self.acc
         self.pos += self.vel + 0.5 * self.acc
         self.rect.center = self.pos
-
+        #Screen Boundaries
         if self.pos.x > WIDTH - SAFEZONE:
             self.pos.x = WIDTH - SAFEZONE
         if self.pos.y > HEIGHT - SAFEZONE:
@@ -144,39 +137,30 @@ class Platform(Sprite):
 
 ###############################################Projectile###############################################
 class Projectile(Sprite): 
-    def __init__(self,w,h):
+    def __init__(self,w,h, player_num):
         Sprite.__init__(self)
         self.image = pg.Surface((w, h))
-        self.image.fill(GREEN)
+        self.image.fill(RED)
         self.rect = self.image.get_rect()
-        self.rect.center = (player.pos.x, player.pos.y)
-        self.pos = vec(player.pos.x, player.pos.y)
+        if player_num == 1:
+            self.rect.center = (player1.pos.x, player1.pos.y)
+            self.pos = vec(player1.pos.x, player1.pos.y)
+            self.vel = vec(math.cos(player1.direction) * BULLET_SPEED,math.sin(player1.direction)* BULLET_SPEED)
+        if player_num == 2:
+            self.rect.center = (player2.pos.x, player2.pos.y)
+            self.pos = vec(player2.pos.x, player2.pos.y)
+            self.vel = vec(math.cos(player2.direction) * BULLET_SPEED,math.sin(player2.direction)* BULLET_SPEED)
         self.TIME_ALIVE = 0
         # Makes the velocity equal to the player direction, but in terms of x and y
         #Then multiplied by the setting of bullet speed
-        self.vel = vec(math.cos(player.direction) * BULLET_SPEED,math.sin(player.direction)* BULLET_SPEED)
         self.acc = vec(0,0)
    
     def update(self):
-        #kills bullet after Time Alive 
-        if self.TIME_ALIVE > BULLET_LIFESPAN:
+        #Kills bullet when leaving screen
+        if self.pos.y > HEIGHT or self.pos.y < 0:
+            self.kill() 
+        if self.pos.x > WIDTH or self.pos.y < 0:
             self.kill()
-            print("Bullet DIED")
-        self.TIME_ALIVE += 1
-        print(self.TIME_ALIVE)
-
-        if self.vel.y > 0:
-            if self.pos.y > HEIGHT: 
-                self.pos.y = 0
-        elif self.vel.y < 0:
-            if self.pos.y  < 0:
-                self.pos.y = HEIGHT
-        if self.vel.x > 0:
-            if self.pos.x > WIDTH:
-                self.pos.x = 0
-        elif self.vel.x < 0:
-            if self.pos.x < 0:
-                self.pos.x = WIDTH 
         #Resets Acceleration to zero so it does not become additive
         self.acc = vec(0,0) 
         self.rect = self.image.get_rect(center=self.rect.center)
@@ -214,6 +198,8 @@ class Wall(Sprite):
                 walls.add(wall)
                 all_sprites.add(wall)
             self.kill()
+        #Kills Bullets upon touching wall
+        pg.sprite.spritecollide(self, bullets, True)
 
 
 
@@ -228,6 +214,7 @@ clock = pg.time.Clock()
 img_dir1 = path.join(path.dirname(__file__), r'C:\GitHub\introToProgramming\introToProgrammingFinalProject\images')
 #Image Loading 
 player1_img = pg.image.load(path.join(img_dir1, "player_blue.png")).convert()
+player2_img = pg.image.load(path.join(img_dir1, "player_orange.png")).convert()
 # create a group for all sprites
 all_sprites = pg.sprite.Group()
 all_platforms = pg.sprite.Group()
@@ -236,12 +223,13 @@ walls = pg.sprite.Group()
 
 
 # instantiate classes
-player = Player(0)
+player1 = Player(0,1)
+player2 = Player(0,2)
 
 #From Mr. Cozort to instantiate multiple enemies
 # add player to all sprites grousp
 
-all_sprites.add(player, bullets)
+all_sprites.add(player1,player2, bullets)
 # add platform to all sprites group
 
 #Walls Option
@@ -304,14 +292,6 @@ while running:
     all_sprites.update()
     all_platforms.update()
 
-
-    #Player Looping Boundaries as well as Platform Hits        
-    '''saving code for later jut in case I decide I need it 
-
-        hits = pg.sprite.spritecollide(player, all_platforms, False)    
-        if hits:
-            player.rect.top = hits[0].rect.bottom
-            player.vel.y = 1'''
 
 
   
