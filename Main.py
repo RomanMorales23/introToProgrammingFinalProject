@@ -8,7 +8,8 @@ Various Commands - Mr. Cozort
 
 #Importing Misc. libraries and modules
 import sys
-from os import *
+from os import path
+
 
 
 #Importing Pygame Libraries
@@ -32,13 +33,6 @@ vec = pg.math.Vector2
 #reassigns name to Vector2
 vec = pg.math.Vector2
 
-# loading filepaths for the sprite images (Andrew)
-#img_dir1 = path.join(path.dirname(__file__), r'C:\GitHub\introToProgramming\introToProgrammingFinalProject/images')
-#Image Loading 
-#player1_img = pg.image.load(path.join(img_dir1, "player_blue")).convert()
-"C:\GitHub\introToProgramming\introToProgrammingFinalProject\images\player_blue.png"
-
-
 #From M. Cozort  
 def draw_text(text, size, color, x, y):
         font_name = pg.font.match_font('Impact')
@@ -54,7 +48,7 @@ def RandColor():
 class Player(Sprite):
     def __init__(self,direction):
         Sprite.__init__(self)        
-        self.image = pg.Surface((50, 20), pg.SRCALPHA)
+        '''self.image = pg.Surface((50, 20), pg.SRCALPHA)
         self.image.fill(BLACK)
         self.original_image = self.image
         self.rect = pg.draw.polygon(self.image, (WHITE), ((0, 0), (0, 20), (50, 10)))
@@ -62,18 +56,18 @@ class Player(Sprite):
         self.pos = vec(WIDTH/2, HEIGHT/2)
         self.vel = vec(0,0)
         self.acc = vec(0,0)
-        self.direction = math.radians(direction)
+        self.direction = math.radians(direction)'''
 
-        '''self.image = pg.Surface((10, 20))
-        self.image.fill(BLACK)
+        self.image = pg.Surface((25, 19))
         self.original_image = player1_img
-        self.original_image = self.image
+        self.original_image = pg.transform.scale(player1_img, (25, 19))
+        self.original_image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH/2, HEIGHT/2)
         self.pos = vec(WIDTH/2, HEIGHT/2)
         self.vel = vec(0,0)
         self.acc = vec(0,0)
-        self.direction = math.radians(direction)'''
+        self.direction = math.radians(direction)
     #Controls altered to use a direction and magnitude instead of individual x and y inputs 
     def controls(self):
         keys= pg.key.get_pressed()
@@ -108,7 +102,6 @@ class Player(Sprite):
             SHOT_TIMER = 0        
     def update(self):
         if pg.sprite.spritecollide(self, walls, False):
-            print("GAY")
             self.vel.xy = (0,0)
         if pg.sprite.spritecollide(self, bullets, False):
             #Prevents Player Death for the first second
@@ -231,6 +224,10 @@ screen = pg.display.set_mode((WIDTH, HEIGHT))
 pg.display.set_caption("My Game...")
 clock = pg.time.Clock()
   
+#Image Loading from Andrew
+img_dir1 = path.join(path.dirname(__file__), r'C:\GitHub\introToProgramming\introToProgrammingFinalProject\images')
+#Image Loading 
+player1_img = pg.image.load(path.join(img_dir1, "player_blue.png")).convert()
 # create a group for all sprites
 all_sprites = pg.sprite.Group()
 all_platforms = pg.sprite.Group()
