@@ -11,8 +11,12 @@ FRAME = 1
 BULLET_SPEED = 20
 BULLET_PEN = False
 CAN_DIE = False
-JOYSTICK_Location_Left = [0,0]
-JOYSTICK_Location_Right = [0,0]
+#Player1 Control Mapping
+JOY1_Location_Left = [0,0]
+JOY1_Location_Right = [0,0]
+#Player2 Contol Mapping
+JOY2_Location_Left = [0,0]
+JOY2_Location_Right = [0,0]
 Max_Wall_Length = 5
 WALLS = True
 AMOUNT_WALLS = 100

@@ -51,12 +51,13 @@ class Player(Sprite):
         self.image = pg.Surface((25, 19))
         if player_num ==1: 
             self.original_image = player1_img
-        elif player_num == 2:
+        if player_num == 2:
             self.original_image = player2_img
         self.original_image = pg.transform.scale(player1_img, (25, 19))
         self.original_image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH/2, HEIGHT/2)
+        self.player_num = player_num
         if player_num ==1: 
             self.pos = vec(20,20)
         elif player_num == 2:
@@ -76,20 +77,34 @@ class Player(Sprite):
             self.vel.y = -SPEED * 10
         if keys[pg.K_s]:
             self.vel.y = SPEED *10'''
-        if abs(JOYSTICK_Location_Left[1]) > DEADZONE:
-            self.vel.y = JOYSTICK_Location_Left[1] * SPEED
-        if abs(JOYSTICK_Location_Left[0]) > DEADZONE:
-            self.vel.x = JOYSTICK_Location_Left[0] * SPEED
-        if abs(JOYSTICK_Location_Right[0]) > DEADZONE:
-            if JOYSTICK_Location_Right[0] > 0:
-                self.direction = math.atan((JOYSTICK_Location_Right[1] / JOYSTICK_Location_Right[0]))
-            elif JOYSTICK_Location_Right[0] < 0:
-                self.direction = math.pi + math.atan((JOYSTICK_Location_Right[1] / JOYSTICK_Location_Right[0]))
+        if self.player_num == 1:
+            if abs(JOY1_Location_Left[1]) > DEADZONE:
+                self.vel.y = JOY1_Location_Left[1] * SPEED
+            if abs(JOY1_Location_Left[0]) > DEADZONE:
+                self.vel.x = JOY1_Location_Left[0] * SPEED
+            if abs(JOY1_Location_Right[0]) > DEADZONE:
+                if JOY1_Location_Right[0] > 0:
+                    self.direction = math.atan((JOY1_Location_Right[1] / JOY1_Location_Right[0]))
+                elif JOY1_Location_Right[0] < 0:
+                    self.direction = math.pi + math.atan((JOY1_Location_Right[1] / JOY1_Location_Right[0]))
+        if self.player_num == 2:
+            if abs(JOY2_Location_Left[1]) > DEADZONE:
+                self.vel.y = JOY2_Location_Left[1] * SPEED
+            if abs(JOY2_Location_Left[0]) > DEADZONE:
+                self.vel.x = JOY2_Location_Left[0] * SPEED
+            if abs(JOY2_Location_Right[0]) > DEADZONE:
+                if JOY2_Location_Right[0] > 0:
+                    self.direction = math.atan((JOY2_Location_Right[1] / JOY2_Location_Right[0]))
+                elif JOY2_Location_Right[0] < 0:
+                    self.direction = math.pi + math.atan((JOY2_Location_Right[1] / JOY2_Location_Right[0]))
     def shoot():
         global SHOT_TIMER
         if SHOT_TIMER > 5:
-            print("I FIRED")
-            pew = (Projectile(10,3, 1))
+            print(event.joy)
+            if event.joy == 0:
+                pew = (Projectile(10,3, 2))
+            if event.joy == 1: 
+                pew = (Projectile(10,3, 1))
             bullets.add(pew)
             all_sprites.add(pew)
             SHOT_TIMER = 0        
@@ -256,20 +271,25 @@ while running:
         if event.type == JOYBUTTONUP:
             pass
         if event.type == JOYAXISMOTION:
-            print(event.joy)#######################USE AN IF STATEMENT TO SORT OUT INPUTS, DUPLICATE PLAYER CLASS WITH DIFFERENT VARIABLE NAMES################################################
             #Trigger is Considered an Axis
-            if event.axis == 5:
-                if event.value == 1:
-                    print(event.value)
-                    Player.shoot()
-
-            #Sorts out which Joystick the Value is comming from 0 & 1 is left joystick axis while 2 & 3 is right
-            if event.axis == 0 or event.axis == 1:
-                JOYSTICK_Location_Left[event.axis] = event.value
-            if event.axis == 2 or event.axis == 3:
-                JOYSTICK_Location_Right[event.axis - 2] = event.value
-        if event.type == JOYHATMOTION:
-            pass
+            if event.joy == 1:
+                if event.axis == 5:
+                    if event.value == 1:
+                        Player.shoot()
+                #Sorts out which Joystick the Value is comming from 0 & 1 is left joystick axis while 2 & 3 is right
+                if event.axis == 0 or event.axis == 1:
+                    JOY1_Location_Left[event.axis] = event.value
+                if event.axis == 2 or event.axis == 3:
+                    JOY1_Location_Right[event.axis - 2] = event.value
+            if event.joy == 0:
+                if event.axis == 5:
+                    if event.value == 1:
+                        Player.shoot()
+                #Sorts out which Joystick the Value is comming from 0 & 1 is left joystick axis while 2 & 3 is right
+                if event.axis == 0 or event.axis == 1:
+                    JOY2_Location_Left[event.axis] = event.value
+                if event.axis == 2 or event.axis == 3:
+                    JOY2_Location_Right[event.axis - 2] = event.value
         if event.type == JOYDEVICEADDED:
             joysticks = [pg.joystick.Joystick(i) for i in range(pg.joystick.get_count())]
             for joystick in joysticks:
