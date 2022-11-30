@@ -8,7 +8,7 @@ Various Commands - Mr. Cozort
 
 #Importing Misc. libraries and modules
 import sys
-from os import kill
+from os import *
 
 
 #Importing Pygame Libraries
@@ -32,6 +32,12 @@ vec = pg.math.Vector2
 #reassigns name to Vector2
 vec = pg.math.Vector2
 
+# loading filepaths for the sprite images (Andrew)
+#img_dir1 = path.join(path.dirname(__file__), r'C:\GitHub\introToProgramming\introToProgrammingFinalProject/images')
+#Image Loading 
+#player1_img = pg.image.load(path.join(img_dir1, "player_blue")).convert()
+"C:\GitHub\introToProgramming\introToProgrammingFinalProject\images\player_blue.png"
+
 
 #From M. Cozort  
 def draw_text(text, size, color, x, y):
@@ -44,11 +50,10 @@ def draw_text(text, size, color, x, y):
 def RandColor():
     return random.randint(0,255)
 
-
 ###############################################Class Player One (WSD SPACE)###############################################
 class Player(Sprite):
     def __init__(self,direction):
-        Sprite.__init__(self)
+        Sprite.__init__(self)        
         self.image = pg.Surface((50, 20), pg.SRCALPHA)
         self.image.fill(BLACK)
         self.original_image = self.image
@@ -58,11 +63,22 @@ class Player(Sprite):
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.direction = math.radians(direction)
+
+        '''self.image = pg.Surface((10, 20))
+        self.image.fill(BLACK)
+        self.original_image = player1_img
+        self.original_image = self.image
+        self.rect = self.image.get_rect()
+        self.rect.center = (WIDTH/2, HEIGHT/2)
+        self.pos = vec(WIDTH/2, HEIGHT/2)
+        self.vel = vec(0,0)
+        self.acc = vec(0,0)
+        self.direction = math.radians(direction)'''
     #Controls altered to use a direction and magnitude instead of individual x and y inputs 
     def controls(self):
         keys= pg.key.get_pressed()
 
-            
+
         if keys[pg.K_a]:
             self.vel.x = -SPEED * 10
         if keys[pg.K_d]:
@@ -114,31 +130,15 @@ class Player(Sprite):
         self.vel += self.acc
         self.pos += self.vel + 0.5 * self.acc
         self.rect.center = self.pos
-        if self.pos.x > WIDTH:
-            self.pos.x = WIDTH
-        if self.pos.y > HEIGHT:
-            self.pos.y = HEIGHT
-        if self.pos.x < 0:
-            self.pos.x = 0
-        if self.pos.y < 0:
-            self.pos.y = 0
 
-
-
-        '''if self.vel.y > 0:
-            if self.pos.y > HEIGHT: 
-                self.vel.y = 0
-        elif self.vel.y < 0:
-            if self.pos.y  < 0:
-                self.vel.y = 0
-        if self.vel.x > 0:
-            if self.pos.x > WIDTH:
-                self.vel.x = 0
-        elif self.vel.x < 0:
-            if self.vel.x < 0:
-                self.pos.x = 0'''       
-        
-
+        if self.pos.x > WIDTH - SAFEZONE:
+            self.pos.x = WIDTH - SAFEZONE
+        if self.pos.y > HEIGHT - SAFEZONE:
+            self.pos.y = HEIGHT - SAFEZONE
+        if self.pos.x < 0 + SAFEZONE:
+            self.pos.x = 0 + SAFEZONE
+        if self.pos.y < 0 + SAFEZONE:
+            self.pos.y = 0 + SAFEZONE
 ###############################################Platfroms###############################################
 class Platform(Sprite):
     def __init__(self, x, y, w, h):
@@ -211,9 +211,9 @@ class Wall(Sprite):
         prevx = self.x
         prevy = self.y
         if self.iterations == 1:
-            for i in range(5):
-                x = prevx + random.choice([-20, 0, 20])
-                y = prevy + random.choice([-20, 0, 20])
+            for i in range(10):
+                x = prevx + random.choice([-9, 0, 9])
+                y = prevy + random.choice([-9, 0, 9])
                 prevx = x
                 prevy = y
                 wall = Wall(x, y, 0)
@@ -271,6 +271,7 @@ while running:
         if event.type == JOYBUTTONUP:
             pass
         if event.type == JOYAXISMOTION:
+            print(event.joy)#######################USE AN IF STATEMENT TO SORT OUT INPUTS, DUPLICATE PLAYER CLASS WITH DIFFERENT VARIABLE NAMES################################################
             #Trigger is Considered an Axis
             if event.axis == 5:
                 if event.value == 1:

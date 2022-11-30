@@ -16,6 +16,8 @@ JOYSTICK_Location_Right = [0,0]
 Max_Wall_Length = 5
 WALLS = True
 AMOUNT_WALLS = 100
+#Savezone is the amount the character stay on the edge of the screen
+SAFEZONE = 10
 #Joystick Deadzone
 DEADZONE = 0.01
 
