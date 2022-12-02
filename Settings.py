@@ -10,7 +10,7 @@ SPEED = 10
 FRAME = 1
 BULLET_SPEED = 20
 BULLET_PEN = False
-CAN_DIE = False
+CAN_DIE = True
 #Player1 Control Mapping
 JOY1_Location_Left = [0,0]
 JOY1_Location_Right = [0,0]

@@ -53,17 +53,15 @@ class Player(Sprite):
         if player_num ==1: 
             self.original_image = player1_img
             self.original_image = pg.transform.scale(player1_img, (25, 19))
+            self.pos = vec(WIDTH/2, HEIGHT/2)
         if player_num == 2:
             self.original_image = player2_img
             self.original_image = pg.transform.scale(player2_img, (25, 19))
+            self.pos = vec(WIDTH/2 - 20, HEIGHT/2 - 20)
         self.original_image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH/2, HEIGHT/2)
         self.player_num = player_num
-        if player_num ==1: 
-            self.pos = vec(20,20)
-        elif player_num == 2:
-            self.pos = vec(WIDTH - 20, HEIGHT - 20)
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.direction = math.radians(direction)
@@ -100,32 +98,36 @@ class Player(Sprite):
                 elif JOY2_Location_Right[0] < 0:
                     self.direction = math.pi + math.atan((JOY2_Location_Right[1] / JOY2_Location_Right[0]))
     def shoot1():
-        global SHOT_TIMER_1
-        if SHOT_TIMER_1 > 5:
-            print(event.joy)
-            if event.joy == 0:
-                pew = (Projectile(2,2, 2))        
-                bullets.add(pew)
-                all_sprites.add(pew)
-            SHOT_TIMER_1 = 0
-    def shoot2(): 
         global SHOT_TIMER_2
         if SHOT_TIMER_2 > 5:
+            if event.joy == 0:
+                pew = (Projectile(2,2, 2))        
+                p2_bullets.add(pew)
+                all_sprites.add(pew)
+            SHOT_TIMER_2 = 0
+    def shoot2(): 
+        global SHOT_TIMER_1
+        if SHOT_TIMER_1 > 5:
             if event.joy == 1: 
                 pew = (Projectile(2,2, 1))
-                bullets.add(pew)
+                p1_bullets.add(pew)
                 all_sprites.add(pew)
-            SHOT_TIMER_2 = 0     
+            SHOT_TIMER_1 = 0     
     def update(self):
         if pg.sprite.spritecollide(self, walls, False):
-            self.vel.xy = (0,0)
-        if pg.sprite.spritecollide(self, bullets, False):
-            #Prevents Player Death for the first second
-            if FRAME > 30:
+            self.vel.y = 0
+            print("Collision")
+        if self.player_num == 2:
+            if pg.sprite.spritecollide(self, p1_bullets, True):
+                print("P2 DEAD")
+                #Prevents Player Death for the first second
                 if CAN_DIE == True:
                     self.kill()
                     global DEAD
                     DEAD = 1
+        if self.player_num == 1:
+            if pg.sprite.spritecollide(self, p2_bullets, True):
+                print("P1 DEAD?")
         #Rotates the sprite according to the direction control
         self.image = pg.transform.rotate(self.original_image, math.degrees(-self.direction))
         self.rect = self.image.get_rect(center=self.rect.center)
@@ -165,6 +167,7 @@ class Projectile(Sprite):
         self.image = pg.Surface((w, h))
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
+        self.player_num = player_num
         if player_num == 1:
             self.rect.center = (player1.pos.x, player1.pos.y)
             self.pos = vec(player1.pos.x, player1.pos.y)
@@ -179,6 +182,12 @@ class Projectile(Sprite):
         self.acc = vec(0,0)
    
     def update(self):
+        if self.player_num == 1:
+            pg.sprite.spritecollide(self, player1, True)
+        if self.player_num == 2:
+            #pg.sprite.spritecollide(self, bullets, False)
+            pass
+
         #Kills bullet when leaving screen
         if self.pos.y > HEIGHT or self.pos.y < 0:
             self.kill() 
@@ -222,7 +231,8 @@ class Wall(Sprite):
                 all_sprites.add(wall)
             self.kill()
         #Kills Bullets upon touching wall
-        pg.sprite.spritecollide(self, bullets, True)
+        pg.sprite.spritecollide(self, p1_bullets, True)
+        pg.sprite.spritecollide(self, p2_bullets, True)
 
 
 
@@ -239,10 +249,12 @@ img_dir1 = path.join(path.dirname(__file__), r'C:\GitHub\introToProgramming\intr
 player1_img = pg.image.load(path.join(img_dir1, "player_blue.png")).convert()
 player2_img = pg.image.load(path.join(img_dir1, "player_orange.png")).convert()
 # create a group for all sprites
+
 all_sprites = pg.sprite.Group()
 all_platforms = pg.sprite.Group()
-bullets = pg.sprite.Group()
+p2_bullets = pg.sprite.Group()
 walls = pg.sprite.Group()
+p1_bullets = pg.sprite.Group()
 
 
 # instantiate classes
@@ -252,7 +264,7 @@ player2 = Player(0,2)
 #From Mr. Cozort to instantiate multiple enemies
 # add player to all sprites grousp
 
-all_sprites.add(player1,player2, bullets)
+all_sprites.add(player1,player2)
 # add platform to all sprites group
 
 #Walls Option
