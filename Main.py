@@ -47,13 +47,15 @@ def RandColor():
 ###############################################Class Player One (WSD SPACE)###############################################
 class Player(Sprite):
     def __init__(self,direction, player_num):
-        Sprite.__init__(self)        
+        Sprite.__init__(self)  
+        self.player_num = player_num      
         self.image = pg.Surface((25, 19))
         if player_num ==1: 
             self.original_image = player1_img
+            self.original_image = pg.transform.scale(player1_img, (25, 19))
         if player_num == 2:
             self.original_image = player2_img
-        self.original_image = pg.transform.scale(player1_img, (25, 19))
+            self.original_image = pg.transform.scale(player2_img, (25, 19))
         self.original_image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH/2, HEIGHT/2)
@@ -97,17 +99,23 @@ class Player(Sprite):
                     self.direction = math.atan((JOY2_Location_Right[1] / JOY2_Location_Right[0]))
                 elif JOY2_Location_Right[0] < 0:
                     self.direction = math.pi + math.atan((JOY2_Location_Right[1] / JOY2_Location_Right[0]))
-    def shoot():
-        global SHOT_TIMER
-        if SHOT_TIMER > 5:
+    def shoot1():
+        global SHOT_TIMER_1
+        if SHOT_TIMER_1 > 5:
             print(event.joy)
             if event.joy == 0:
-                pew = (Projectile(10,3, 2))
+                pew = (Projectile(2,2, 2))        
+                bullets.add(pew)
+                all_sprites.add(pew)
+            SHOT_TIMER_1 = 0
+    def shoot2(): 
+        global SHOT_TIMER_2
+        if SHOT_TIMER_2 > 5:
             if event.joy == 1: 
-                pew = (Projectile(10,3, 1))
-            bullets.add(pew)
-            all_sprites.add(pew)
-            SHOT_TIMER = 0        
+                pew = (Projectile(2,2, 1))
+                bullets.add(pew)
+                all_sprites.add(pew)
+            SHOT_TIMER_2 = 0     
     def update(self):
         if pg.sprite.spritecollide(self, walls, False):
             self.vel.xy = (0,0)
@@ -155,7 +163,7 @@ class Projectile(Sprite):
     def __init__(self,w,h, player_num):
         Sprite.__init__(self)
         self.image = pg.Surface((w, h))
-        self.image.fill(RED)
+        self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
         if player_num == 1:
             self.rect.center = (player1.pos.x, player1.pos.y)
@@ -267,7 +275,7 @@ while running:
     for event in pg.event.get():
         if event.type == JOYBUTTONDOWN:
             if event.button == 0:
-                Player.shoot()
+                pass
         if event.type == JOYBUTTONUP:
             pass
         if event.type == JOYAXISMOTION:
@@ -275,7 +283,7 @@ while running:
             if event.joy == 1:
                 if event.axis == 5:
                     if event.value == 1:
-                        Player.shoot()
+                        Player.shoot2()
                 #Sorts out which Joystick the Value is comming from 0 & 1 is left joystick axis while 2 & 3 is right
                 if event.axis == 0 or event.axis == 1:
                     JOY1_Location_Left[event.axis] = event.value
@@ -284,7 +292,7 @@ while running:
             if event.joy == 0:
                 if event.axis == 5:
                     if event.value == 1:
-                        Player.shoot()
+                        Player.shoot1()
                 #Sorts out which Joystick the Value is comming from 0 & 1 is left joystick axis while 2 & 3 is right
                 if event.axis == 0 or event.axis == 1:
                     JOY2_Location_Left[event.axis] = event.value
@@ -328,5 +336,6 @@ while running:
     pg.display.flip()
     
     FRAME += 1
-    SHOT_TIMER += 1
+    SHOT_TIMER_1 += 1
+    SHOT_TIMER_2 += 1
 pg.quit()

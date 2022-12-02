@@ -32,11 +32,13 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 GREY = (169,169,169)
+YELLOW = (255, 255, 0)
 
 #Global Variables
 DEAD = 0
 SCORE = 0
 FRAME = 1
-SHOT_TIMER = 0
+SHOT_TIMER_1 = 0
+SHOT_TIMER_2 = 0
 BULLET_LIFESPAN = 150
 wall_list = []
