@@ -8,6 +8,7 @@ Various Commands - Mr. Cozort
 
 #Importing Misc. libraries and modules
 import sys
+import os
 from os import path
 
 
@@ -244,7 +245,11 @@ pg.display.set_caption("My Game...")
 clock = pg.time.Clock()
   
 #Image Loading from Andrew
-img_dir1 = path.join(path.dirname(__file__), r'C:\GitHub\introToProgramming\introToProgrammingFinalProject\images')
+
+game_folder = os.path.dirname(__file__)
+img_dir1 = os.path.join(game_folder, 'images')
+
+#img_dir1 = path.join(path.dirname(__file__), r'C:\GitHub\introToProgramming\introToProgrammingFinalProject\images')
 #Image Loading 
 player1_img = pg.image.load(path.join(img_dir1, "player_blue.png")).convert()
 player2_img = pg.image.load(path.join(img_dir1, "player_orange.png")).convert()
@@ -327,6 +332,13 @@ while running:
         if event.type == pg.QUIT:
             running = False
     
+
+    #Collision Detection
+    hits1 = pg.sprite.spritecollide(player1, walls, False)
+    hits2 = pg.sprite.spritecollide(player2, walls, False)
+    print(hits1)
+    print(hits2)
+
     ############ Update ##############
     # update all sprites
     all_sprites.update()
