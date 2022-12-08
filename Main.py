@@ -1,9 +1,12 @@
 '''
 Citations: 
-Rect Collision with better accuracy: https://www.youtube.com/watch?v=1_H7InPMjaY&ab_channel=ClearCode
+
+
+Rect Collision with better accuracy - https://www.youtube.com/watch?v=1_H7InPMjaY&ab_channel=ClearCode
 Controller Input - DaFluffyPotateo on YT: https://www.youtube.com/watch?v=Hp0M8iExfDc&ab_channel=DaFluffyPotato
 Pygame Docuementation - https://www.pygame.org/docs/
 Various Commands - Mr. Cozort 
+Misc Help - Andrew :|
 '''
 
 #Importing Misc. libraries and modules
@@ -11,13 +14,10 @@ import sys
 import os
 from os import path
 
-
-
 #Importing Pygame Libraries
 import pygame as pg
 from pygame.sprite import Sprite
 from pygame.locals import *
-
 
 #Importing Math Related Libraries for input and vector Calculations 
 import math
@@ -27,11 +27,7 @@ from random import randint
 #Created Libraries
 from Settings import *
 
-
 #Name Reassignments
-vec = pg.math.Vector2
-
-#reassigns name to Vector2
 vec = pg.math.Vector2
 
 #From M. Cozort  
@@ -42,10 +38,8 @@ def draw_text(text, size, color, x, y):
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x, y)
         screen.blit(text_surface, text_rect)
-def RandColor():
-    return random.randint(0,255)
 
-###############################################Class Player One (WSD SPACE)###############################################
+###############################################Player###############################################
 class Player(Sprite):
     def __init__(self,direction, player_num):
         Sprite.__init__(self)  
@@ -112,7 +106,8 @@ class Player(Sprite):
         if self.player_num == 2:
             if pg.sprite.spritecollide(self, p1_bullets, True):
                 print("P2 DEAD")
-                #Prevents Player Death for the first second
+
+                #Prevents Player Death
                 if CAN_DIE == True:
                     self.kill()
                     global DEAD
@@ -160,18 +155,24 @@ class Projectile(Sprite):
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
         self.player_num = player_num
+        #Divides Porjectile Class by Player Number to seperate spawning and interaction
         if player_num == 1:
             self.rect.center = (player1.pos.x, player1.pos.y)
             self.pos = vec(player1.pos.x, player1.pos.y)
+
+            #Turns Cordinates of joystick into Direction for Player
             self.vel = vec(math.cos(player1.direction) * BULLET_SPEED,math.sin(player1.direction)* BULLET_SPEED)
+
         if player_num == 2:
             self.rect.center = (player2.pos.x, player2.pos.y)
             self.pos = vec(player2.pos.x, player2.pos.y)
+
+            #Turns Cordinates of joystick into Direction for Player
             self.vel = vec(math.cos(player2.direction) * BULLET_SPEED,math.sin(player2.direction)* BULLET_SPEED)
+
         self.TIME_ALIVE = 0
-        # Makes the velocity equal to the player direction, but in terms of x and y
-        #Then multiplied by the setting of bullet speed
-        self.acc = vec(0,0)
+        #Resets Acceloration to 0 
+        self.acc = (0,0)
    
     def update(self):
         if self.player_num == 1:
@@ -228,42 +229,36 @@ class Wall(Sprite):
 
 
 
-# init pygame and create a window
+#Init pygame and create a window
 pg.init()
 pg.mixer.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 pg.display.set_caption("My Game...")
 clock = pg.time.Clock()
   
-#Image Loading from Andrew
-
+#Image Loading from Game Tutorials
 game_folder = os.path.dirname(__file__)
 img_dir1 = os.path.join(game_folder, 'images')
 
-#img_dir1 = path.join(path.dirname(__file__), r'C:\GitHub\introToProgramming\introToProgrammingFinalProject\images')
-#Image Loading 
+#Image Loading (Andrew)
 player1_img = pg.image.load(path.join(img_dir1, "player_blue.png")).convert()
 player2_img = pg.image.load(path.join(img_dir1, "player_orange.png")).convert()
-# create a group for all sprites
 
+#Creating groups for all sprites
 all_sprites = pg.sprite.Group()
-all_platforms = pg.sprite.Group()
 p2_bullets = pg.sprite.Group()
 walls = pg.sprite.Group()
 p1_bullets = pg.sprite.Group()
 
 
-# instantiate classes
+#Instantiate classes
 player1 = Player(0,1)
 player2 = Player(0,2)
 
-#From Mr. Cozort to instantiate multiple enemies
-# add player to all sprites grousp
-
+#Ddd player to all sprites grousp
 all_sprites.add(player1,player2)
-# add platform to all sprites group
 
-#Walls Option
+#Walls Option and Spawning from Andrew
 if WALLS == True:  
     for i in range(AMOUNT_WALLS): 
         x = random.randint(0, WIDTH/20 - 1) * 20 + 10
@@ -280,7 +275,7 @@ while running:
     # keep the loop running using clock
     clock.tick(FPS)
 
-    #From DaFluffyPotatoe
+    #From DaFluffyPotatoe:
     for event in pg.event.get():
         if event.type == JOYAXISMOTION:
             
@@ -310,15 +305,13 @@ while running:
                 print(joystick.get_name())
         if event.type == JOYDEVICEREMOVED:
             joysticks = [pg.joystick.Joystick(i) for i in range(pg.joystick.get_count())]
-            
-        if event.type == QUIT:
-            pg.quit()
-            sys.exit()
+
+        #Close Window on Keypress
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE:
                 pg.quit()
                 sys.exit()
-        # check for closed window
+        #Check for closed window and stops RUNNING loop
         if event.type == pg.QUIT:
             running = False
     
@@ -326,7 +319,6 @@ while running:
     #Collision Detection for Walls vs Player
     hits1 = pg.sprite.spritecollide(player1, walls, False)
     hits2 = pg.sprite.spritecollide(player2, walls, False)
-
         #Player 1
     if hits1:
         if abs(player1.rect.top - hits1[0].rect.bottom) < Collision_Tolerance: 
@@ -341,6 +333,7 @@ while running:
         if abs(player1.rect.left - hits1[0].rect.right) < Collision_Tolerance: 
             player1.pos.x = hits1[0].rect.right + 12.5
             player1.vel.x = 0
+        #Player 2
     if hits2:
         if abs(player2.rect.top - hits2[0].rect.bottom) < Collision_Tolerance: 
             player2.pos.y = hits2[0].rect.bottom + 9.5
@@ -359,11 +352,7 @@ while running:
     ############ Update ##############
     # update all sprites
     all_sprites.update()
-    all_platforms.update()
 
-
-
-  
     ########## Draw ################
     # draw the background screen
     screen.fill(BLACK)
@@ -376,6 +365,7 @@ while running:
     # buffer - after drawing everything, flip display
     pg.display.flip()
     
+    #Misc Counters 
     FRAME += 1
     SHOT_TIMER_1 += 1
     SHOT_TIMER_2 += 1
