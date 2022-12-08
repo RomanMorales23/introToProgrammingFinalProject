@@ -50,6 +50,7 @@ class Player(Sprite):
         Sprite.__init__(self)  
         self.player_num = player_num      
         self.image = pg.Surface((25, 19))
+        #Differentiates Images For Player 1 & 2
         if player_num ==1: 
             self.original_image = player1_img
             self.original_image = pg.transform.scale(player1_img, (25, 19))
@@ -67,16 +68,7 @@ class Player(Sprite):
         self.direction = math.radians(direction)
     #Controls altered to use a direction and magnitude instead of individual x and y inputs 
     def controls(self):
-        '''keys= pg.key.get_pressed()
-        #Keyboard Controlls for when I forget controllers
-        if keys[pg.K_a]:
-            self.vel.x = -SPEED * 10
-        if keys[pg.K_d]:
-            self.vel.x = SPEED * 10
-        if keys[pg.K_w]:
-            self.vel.y = -SPEED * 10
-        if keys[pg.K_s]:
-            self.vel.y = SPEED *10'''
+        #Differentiates Controls for Player 1 & 2
         if self.player_num == 1:
             if abs(JOY1_Location_Left[1]) > DEADZONE:
                 self.vel.y = JOY1_Location_Left[1] * SPEED
@@ -97,6 +89,7 @@ class Player(Sprite):
                     self.direction = math.atan((JOY2_Location_Right[1] / JOY2_Location_Right[0]))
                 elif JOY2_Location_Right[0] < 0:
                     self.direction = math.pi + math.atan((JOY2_Location_Right[1] / JOY2_Location_Right[0]))
+    #Seperated Shoot Functions to not kill the player itself
     def shoot1():
         global SHOT_TIMER_2
         if SHOT_TIMER_2 > 5:
@@ -113,10 +106,17 @@ class Player(Sprite):
                 p1_bullets.add(pew)
                 all_sprites.add(pew)
             SHOT_TIMER_1 = 0     
+    #Update Function For Player
     def update(self):
+        #Wall Collision
         if pg.sprite.spritecollide(self, walls, False):
+            if self.player_num == 1:
+                print("Player 1 Colliding")
+                self.acc = (0,0)
+                player1.vel == (0,0)
+            if self.player_num == 2:
+                print("Player 2 Colliding")
             self.vel.y = 0
-            print("Collision")
         if self.player_num == 2:
             if pg.sprite.spritecollide(self, p1_bullets, True):
                 print("P2 DEAD")
@@ -185,7 +185,7 @@ class Projectile(Sprite):
         if self.player_num == 1:
             pg.sprite.spritecollide(self, player1, True)
         if self.player_num == 2:
-            #pg.sprite.spritecollide(self, bullets, False)
+            #pg.sprite.spritecollide(self, player2, True)
             pass
 
         #Kills bullet when leaving screen
@@ -197,7 +197,7 @@ class Projectile(Sprite):
         self.acc = vec(0,0) 
         self.rect = self.image.get_rect(center=self.rect.center)
 
-        # Updating movement
+        #   Updating movement
         self.vel += self.acc
         self.pos += self.vel + 0.5 * self.acc
         self.rect.center = self.pos
