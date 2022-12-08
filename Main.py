@@ -1,6 +1,6 @@
 '''
 Citations: 
-
+Rect Collision with better accuracy: https://www.youtube.com/watch?v=1_H7InPMjaY&ab_channel=ClearCode
 Controller Input - DaFluffyPotateo on YT: https://www.youtube.com/watch?v=Hp0M8iExfDc&ab_channel=DaFluffyPotato
 Pygame Docuementation - https://www.pygame.org/docs/
 Various Commands - Mr. Cozort 
@@ -213,8 +213,8 @@ class Wall(Sprite):
         prevy = self.y
         if self.iterations == 1:
             for i in range(10):
-                x = prevx + random.choice([-9, 0, 9])
-                y = prevy + random.choice([-9, 0, 9])
+                x = prevx + random.choice([-20, 0, 20])
+                y = prevy + random.choice([-20, 0, 20])
                 prevx = x
                 prevy = y
                 wall = Wall(x, y, 0)
@@ -282,35 +282,35 @@ while running:
 
     #From DaFluffyPotatoe
     for event in pg.event.get():
-        if event.type == JOYBUTTONDOWN:
-            if event.button == 0:
-                pass
         if event.type == JOYAXISMOTION:
-            #Trigger is Considered an Axis
+            
+            #Player 1  Controls
             if event.joy == 1:
                 if event.axis == 5:
                     if event.value == 1:
-                        Player.shoot2()
-                #Sorts out which Joystick the Value is comming from 0 & 1 is left joystick axis while 2 & 3 is right
+                        Player.shoot1()
                 if event.axis == 0 or event.axis == 1:
                     JOY1_Location_Left[event.axis] = event.value
                 if event.axis == 2 or event.axis == 3:
                     JOY1_Location_Right[event.axis - 2] = event.value
+            #Player 2 Controls
             if event.joy == 0:
                 if event.axis == 5:
                     if event.value == 1:
-                        Player.shoot1()
-                #Sorts out which Joystick the Value is comming from 0 & 1 is left joystick axis while 2 & 3 is right
+                        Player.shoot2
                 if event.axis == 0 or event.axis == 1:
                     JOY2_Location_Left[event.axis] = event.value
                 if event.axis == 2 or event.axis == 3:
                     JOY2_Location_Right[event.axis - 2] = event.value
+
+        #Checks for Devices and lists in terminal
         if event.type == JOYDEVICEADDED:
             joysticks = [pg.joystick.Joystick(i) for i in range(pg.joystick.get_count())]
             for joystick in joysticks:
                 print(joystick.get_name())
         if event.type == JOYDEVICEREMOVED:
             joysticks = [pg.joystick.Joystick(i) for i in range(pg.joystick.get_count())]
+            
         if event.type == QUIT:
             pg.quit()
             sys.exit()
@@ -323,35 +323,37 @@ while running:
             running = False
     
 
-    #Collision Detection
+    #Collision Detection for Walls vs Player
     hits1 = pg.sprite.spritecollide(player1, walls, False)
     hits2 = pg.sprite.spritecollide(player2, walls, False)
 
-    #Walls Collison Y-Axis
-    if player1.vel.y > 0:
-        if hits1:
-            # if player1.rect.left <= hits1[0].rect.right:
-            #     player1.rect.left = hits1[0].rect.right
-            #     player1.vel.y
-            if player1.rect.bottom >= hits1[0].rect.top:
-                player1.pos.y = hits1[0].rect.top - 9.5   
-                player1.vel.y = 0
-    if player2.vel.y > 0:
-        if hits2:
-            if player2.rect.bottom >= hits2[0].rect.top:
-                player2.pos.y = hits2[0].rect.top - 9.5
-                player2.vel.y = 0
-
-    if player1.vel.y < 0:
-        if hits1:
-            if player1.rect.top <= hits1[0].rect.bottom:
-                player1.pos.y = hits1[0].rect.bottom + 9.5
-                player1.vel.y = 0
-    if player2.vel.y < 0:
-        if hits2:
-            if player2.rect.top <= hits2[0].rect.bottom:
-                player2.pos.y = hits2[0].rect.bottom + 9.5
-                player2.vel.y = 0
+        #Player 1
+    if hits1:
+        if abs(player1.rect.top - hits1[0].rect.bottom) < Collision_Tolerance: 
+            player1.pos.y = hits1[0].rect.bottom + 9.5
+            player1.vel.y = 0
+        if abs(player1.rect.bottom - hits1[0].rect.top) < Collision_Tolerance: 
+            player1.pos.y = hits1[0].rect.top - 9.5
+            player1.vel.y = 0
+        if abs(player1.rect.right - hits1[0].rect.left) < Collision_Tolerance: 
+            player1.pos.x = hits1[0].rect.left - 12.5
+            player1.vel.x = 0
+        if abs(player1.rect.left - hits1[0].rect.right) < Collision_Tolerance: 
+            player1.pos.x = hits1[0].rect.right + 12.5
+            player1.vel.x = 0
+    if hits2:
+        if abs(player2.rect.top - hits2[0].rect.bottom) < Collision_Tolerance: 
+            player2.pos.y = hits2[0].rect.bottom + 9.5
+            player2.vel.y = 0
+        if abs(player2.rect.bottom - hits2[0].rect.top) < Collision_Tolerance: 
+            player2.pos.y = hits2[0].rect.top - 9.5
+            player2.vel.y = 0
+        if abs(player2.rect.right - hits2[0].rect.left) < Collision_Tolerance: 
+            player2.pos.x = hits2[0].rect.left - 12.5
+            player2.vel.x = 0
+        if abs(player2.rect.left - hits2[0].rect.right) < Collision_Tolerance: 
+            player2.pos.x = hits2[0].rect.right + 12.5
+            player2.vel.x = 0
 
 
     ############ Update ##############
