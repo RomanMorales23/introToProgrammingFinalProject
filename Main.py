@@ -109,15 +109,6 @@ class Player(Sprite):
             SHOT_TIMER_1 = 0     
     #Update Function For Player
     def update(self):
-        #Wall Collision
-        if pg.sprite.spritecollide(self, walls, False):
-            if self.player_num == 1:
-                print("Player 1 Colliding")
-                self.acc = (0,0)
-                player1.vel == (0,0)
-            if self.player_num == 2:
-                print("Player 2 Colliding")
-            self.vel.y = 0
         if self.player_num == 2:
             if pg.sprite.spritecollide(self, p1_bullets, True):
                 print("P2 DEAD")
@@ -289,12 +280,11 @@ while running:
     # keep the loop running using clock
     clock.tick(FPS)
 
+    #From DaFluffyPotatoe
     for event in pg.event.get():
         if event.type == JOYBUTTONDOWN:
             if event.button == 0:
                 pass
-        if event.type == JOYBUTTONUP:
-            pass
         if event.type == JOYAXISMOTION:
             #Trigger is Considered an Axis
             if event.joy == 1:
@@ -336,8 +326,33 @@ while running:
     #Collision Detection
     hits1 = pg.sprite.spritecollide(player1, walls, False)
     hits2 = pg.sprite.spritecollide(player2, walls, False)
-    print(hits1)
-    print(hits2)
+
+    #Walls Collison Y-Axis
+    if player1.vel.y > 0:
+        if hits1:
+            # if player1.rect.left <= hits1[0].rect.right:
+            #     player1.rect.left = hits1[0].rect.right
+            #     player1.vel.y
+            if player1.rect.bottom >= hits1[0].rect.top:
+                player1.pos.y = hits1[0].rect.top - 9.5   
+                player1.vel.y = 0
+    if player2.vel.y > 0:
+        if hits2:
+            if player2.rect.bottom >= hits2[0].rect.top:
+                player2.pos.y = hits2[0].rect.top - 9.5
+                player2.vel.y = 0
+
+    if player1.vel.y < 0:
+        if hits1:
+            if player1.rect.top <= hits1[0].rect.bottom:
+                player1.pos.y = hits1[0].rect.bottom + 9.5
+                player1.vel.y = 0
+    if player2.vel.y < 0:
+        if hits2:
+            if player2.rect.top <= hits2[0].rect.bottom:
+                player2.pos.y = hits2[0].rect.bottom + 9.5
+                player2.vel.y = 0
+
 
     ############ Update ##############
     # update all sprites
