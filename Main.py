@@ -192,6 +192,7 @@ class Wall(Sprite):
         Sprite.__init__(self)
         self.image = pg.Surface((25, 25))
         self.image.fill(GREY)
+        self.image = Walls_Img
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.x = x
@@ -233,6 +234,8 @@ player1_img = pg.image.load(path.join(img_dir1, "player_blue.png")).convert()
 player2_img = pg.image.load(path.join(img_dir1, "player_orange.png")).convert()
 Tombstone = pg.image.load(path.join(img_dir1, "Tombstone.png")).convert()
 Background = pg.image.load(path.join(img_dir1, "Background.png")).convert()
+Walls_Img = pg.image.load(path.join(img_dir1, "Wall.png")).convert()
+
 #Creating groups for all sprites
 all_sprites = pg.sprite.Group()
 p2_bullets = pg.sprite.Group()
