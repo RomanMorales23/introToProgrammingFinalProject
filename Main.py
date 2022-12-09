@@ -86,24 +86,22 @@ class Player(Sprite):
                     self.direction = math.pi + math.atan((JOY2_Location_Right[1] / JOY2_Location_Right[0]))
     #Seperated Shoot Functions to not kill the player itself
     def shoot1():
-        global SHOT_TIMER_2
-        if SHOT_TIMER_2 > 5:
-            if event.joy == 0:
-                pew = (Projectile(2,2, 2))        
-                p2_bullets.add(pew)
-                all_sprites.add(pew)
-            SHOT_TIMER_2 = 0
-    def shoot2(): 
         global SHOT_TIMER_1
         if SHOT_TIMER_1 > 5:
-            if event.joy == 1: 
-                pew = (Projectile(2,2, 1))
-                p1_bullets.add(pew)
-                all_sprites.add(pew)
-            SHOT_TIMER_1 = 0     
+            pew = (Projectile(2,2, 1)) 
+            p1_bullets.add(pew)
+            all_sprites.add(pew)  
+            SHOT_TIMER_1 = 0
+    def shoot2(): 
+        global SHOT_TIMER_2
+        if SHOT_TIMER_2 > 5:
+            pew = Projectile(2,2, 2)
+            p2_bullets.add(pew)
+            all_sprites.add(pew)
+            SHOT_TIMER_2 = 0     
     #Update Function For Player
     def update(self):
-        if self.player_num == 2:
+        '''if self.player_num == 2:
             if pg.sprite.spritecollide(self, p1_bullets, True):
                 print("P2 DEAD")
 
@@ -114,7 +112,7 @@ class Player(Sprite):
                     DEAD = 1
         if self.player_num == 1:
             if pg.sprite.spritecollide(self, p2_bullets, True):
-                print("P1 DEAD?")
+                print("P1 DEAD?")'''
         #Rotates the sprite according to the direction control
         self.image = pg.transform.rotate(self.original_image, math.degrees(-self.direction))
         self.rect = self.image.get_rect(center=self.rect.center)
@@ -156,6 +154,9 @@ class Projectile(Sprite):
         self.rect = self.image.get_rect()
         self.player_num = player_num
         #Divides Porjectile Class by Player Number to seperate spawning and interaction
+        self.pos = vec(100,100)
+        self.vel = vec(5,0)
+
         if player_num == 1:
             self.rect.center = (player1.pos.x, player1.pos.y)
             self.pos = vec(player1.pos.x, player1.pos.y)
@@ -175,11 +176,6 @@ class Projectile(Sprite):
         self.acc = (0,0)
    
     def update(self):
-        if self.player_num == 1:
-            pg.sprite.spritecollide(self, player1, True)
-        if self.player_num == 2:
-            #pg.sprite.spritecollide(self, player2, True)
-            pass
 
         #Kills bullet when leaving screen
         if self.pos.y > HEIGHT or self.pos.y < 0:
@@ -224,8 +220,8 @@ class Wall(Sprite):
                 all_sprites.add(wall)
             self.kill()
         #Kills Bullets upon touching wall
-        pg.sprite.spritecollide(self, p1_bullets, True)
-        pg.sprite.spritecollide(self, p2_bullets, True)
+        '''pg.sprite.spritecollide(self, p1_bullets, True)
+        pg.sprite.spritecollide(self, p2_bullets, True)'''
 
 
 
@@ -254,6 +250,7 @@ p1_bullets = pg.sprite.Group()
 #Instantiate classes
 player1 = Player(0,1)
 player2 = Player(0,2)
+Shoort = Projectile(100,100,1)
 
 #Ddd player to all sprites grousp
 all_sprites.add(player1,player2)
@@ -292,7 +289,7 @@ while running:
             if event.joy == 0:
                 if event.axis == 5:
                     if event.value == 1:
-                        Player.shoot2
+                        Player.shoot2()
                 if event.axis == 0 or event.axis == 1:
                     JOY2_Location_Left[event.axis] = event.value
                 if event.axis == 2 or event.axis == 3:
@@ -358,10 +355,8 @@ while running:
     screen.fill(BLACK)
     # draw all sprites
     all_sprites.draw(screen)
-    #Text 
-    draw_text("SCORE:     " + str(SCORE), 20, WHITE, WIDTH/2, 20)
-    if DEAD == 1:
-        draw_text("YOU DIED :|", 100, WHITE, WIDTH/2, HEIGHT/2)
+    p2_bullets.draw(screen)
+    p1_bullets.draw(screen)
     # buffer - after drawing everything, flip display
     pg.display.flip()
     
