@@ -35,6 +35,7 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 GREY = (169,169,169)
 YELLOW = (255, 255, 0)
+COLORKEY = (20,20,20)
 
 #Global Variables
 DEAD = 0

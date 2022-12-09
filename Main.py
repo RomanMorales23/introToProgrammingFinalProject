@@ -41,20 +41,20 @@ def draw_text(text, size, color, x, y):
 
 ###############################################Player###############################################
 class Player(Sprite):
-    def __init__(self,direction, player_num):
+    def __init__(self, w, h, direction, player_num):
         Sprite.__init__(self)  
         self.player_num = player_num      
-        self.image = pg.Surface((25, 19))
+        self.image = pg.Surface((35, 23))
         #Differentiates Images For Player 1 & 2
         if player_num ==1: 
             self.original_image = player1_img
-            self.original_image = pg.transform.scale(player1_img, (25, 19))
+            self.original_image = pg.transform.scale(player1_img, (w, h))
             self.pos = vec(WIDTH/2, HEIGHT/2)
         if player_num == 2:
             self.original_image = player2_img
-            self.original_image = pg.transform.scale(player2_img, (25, 19))
+            self.original_image = pg.transform.scale(player2_img, (w, h))
             self.pos = vec(WIDTH/2 - 20, HEIGHT/2 - 20)
-        self.original_image.set_colorkey(BLACK)
+        self.original_image.set_colorkey(COLORKEY)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH/2, HEIGHT/2)
         self.player_num = player_num
@@ -88,17 +88,19 @@ class Player(Sprite):
     def shoot1():
         global SHOT_TIMER_1
         if SHOT_TIMER_1 > 5:
-            pew = (Projectile(2,2, 1)) 
-            p1_bullets.add(pew)
-            all_sprites.add(pew)  
-            SHOT_TIMER_1 = 0
+            if PLAYER1_DEAD == False:
+                pew = (Projectile(2,2, 1)) 
+                p1_bullets.add(pew)
+                all_sprites.add(pew)  
+                SHOT_TIMER_1 = 0
     def shoot2(): 
         global SHOT_TIMER_2
         if SHOT_TIMER_2 > 5:
-            pew = Projectile(2,2, 2)
-            p2_bullets.add(pew)
-            all_sprites.add(pew)
-            SHOT_TIMER_2 = 0     
+            if PLAYER2_DEAD == False:
+                pew = Projectile(2,2, 2)
+                p2_bullets.add(pew)
+                all_sprites.add(pew)
+                SHOT_TIMER_2 = 0     
     #Update Function For Player
     def update(self):
         
@@ -241,6 +243,7 @@ img_dir1 = os.path.join(game_folder, 'images')
 player1_img = pg.image.load(path.join(img_dir1, "player_blue.png")).convert()
 player2_img = pg.image.load(path.join(img_dir1, "player_orange.png")).convert()
 Tombstone = pg.image.load(path.join(img_dir1, "Tombstone.png")).convert()
+Background = pg.image.load(path.join(img_dir1, "Background.png")).convert()
 #Creating groups for all sprites
 all_sprites = pg.sprite.Group()
 p2_bullets = pg.sprite.Group()
@@ -249,8 +252,8 @@ p1_bullets = pg.sprite.Group()
 
 
 #Instantiate classes
-player1 = Player(0,1)
-player2 = Player(0,2)
+player1 = Player(41, 40, 0,1)
+player2 = Player(41, 40, 0,2)
 Shoort = Projectile(100,100,1)
 
 #Ddd player to all sprites grousp
@@ -346,30 +349,42 @@ while running:
             player2.pos.x = hits2[0].rect.right + 12.5
             player2.vel.x = 0
 
+    #background 
+    screen.blit(Background, (player1.pos.x - 20,player1.pos.y - 10))
 
+    
     ############ Update ##############
     # update all sprites
     all_sprites.update()
 
     ########## Draw ################
     # draw the background screen
-    screen.fill(BLACK)
+    screen.fill(GREY)
     # draw all sprites
+    screen.blit(Background, (0,0))
     all_sprites.draw(screen)
     p2_bullets.draw(screen)
     p1_bullets.draw(screen)
     
     
-    #Drawing Text
-    screen.blit(Tombstone, (10,10))
+    
+    #Drawing Tombstone & Text
+    Scaled_Tombstone = pg.transform.scale(Tombstone, (35,35))
+    Tombstone.set_colorkey(COLORKEY)
     if PLAYER1_DEAD:
-        screen.blit(Tombstone, (player1.pos.x - 20,player1.pos.y - 10))
+        screen.blit(Scaled_Tombstone, (player1.pos.x - 20,player1.pos.y - 10))
+        draw_text("P1", 10, BLACK, player1.pos.x + 2, player1.pos.y - 5)
         draw_text("Player 2 Wins!", 100, WHITE, WIDTH/2, HEIGHT/2)
+    else:
+       draw_text("P1", 10, WHITE, player1.pos.x, player1.pos.y - 25) 
     if PLAYER2_DEAD:
-        screen.blit(Tombstone, (player1.pos.x - 20,player1.pos.y - 10))
+        screen.blit(Scaled_Tombstone, (player2.pos.x - 20,player2.pos.y - 10))
+        draw_text("P2", 10, BLACK, player2.pos.x + 2, player2.pos.y - 5)
         draw_text("Player 1 Wins!", 100, WHITE, WIDTH/2, HEIGHT/2)
-    draw_text("P1", 10, WHITE, player1.pos.x, player1.pos.y - 25)
-    draw_text("P2", 10, WHITE, player2.pos.x, player2.pos.y - 25)
+    else:
+        draw_text("P2", 10, WHITE, player2.pos.x, player2.pos.y - 25)
+    
+    
     # buffer - after drawing everything, flip display
     pg.display.flip()
     
