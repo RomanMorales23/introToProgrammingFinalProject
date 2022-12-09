@@ -101,18 +101,19 @@ class Player(Sprite):
             SHOT_TIMER_2 = 0     
     #Update Function For Player
     def update(self):
-        '''if self.player_num == 2:
+        
+        if self.player_num == 2:
             if pg.sprite.spritecollide(self, p1_bullets, True):
-                print("P2 DEAD")
-
-                #Prevents Player Death
-                if CAN_DIE == True:
-                    self.kill()
-                    global DEAD
-                    DEAD = 1
+                global PLAYER2_DEAD
+                PLAYER2_DEAD = True
+                self.kill()
         if self.player_num == 1:
             if pg.sprite.spritecollide(self, p2_bullets, True):
-                print("P1 DEAD?")'''
+                global PLAYER1_DEAD
+                PLAYER1_DEAD = True
+                self.kill()
+     
+
         #Rotates the sprite according to the direction control
         self.image = pg.transform.rotate(self.original_image, math.degrees(-self.direction))
         self.rect = self.image.get_rect(center=self.rect.center)
@@ -197,7 +198,7 @@ class Projectile(Sprite):
 class Wall(Sprite):
     def __init__(self, x, y, iterations):
         Sprite.__init__(self)
-        self.image = pg.Surface((20, 20))
+        self.image = pg.Surface((25, 25))
         self.image.fill(GREY)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
@@ -210,8 +211,8 @@ class Wall(Sprite):
         prevy = self.y
         if self.iterations == 1:
             for i in range(10):
-                x = prevx + random.choice([-20, 0, 20])
-                y = prevy + random.choice([-20, 0, 20])
+                x = prevx + random.choice([-1, 0, 1])
+                y = prevy + random.choice([-1, 0, 1])
                 prevx = x
                 prevy = y
                 wall = Wall(x, y, 0)
@@ -220,8 +221,8 @@ class Wall(Sprite):
                 all_sprites.add(wall)
             self.kill()
         #Kills Bullets upon touching wall
-        '''pg.sprite.spritecollide(self, p1_bullets, True)
-        pg.sprite.spritecollide(self, p2_bullets, True)'''
+        pg.sprite.spritecollide(self, p1_bullets, True)
+        pg.sprite.spritecollide(self, p2_bullets, True)
 
 
 
@@ -239,7 +240,7 @@ img_dir1 = os.path.join(game_folder, 'images')
 #Image Loading (Andrew)
 player1_img = pg.image.load(path.join(img_dir1, "player_blue.png")).convert()
 player2_img = pg.image.load(path.join(img_dir1, "player_orange.png")).convert()
-
+Tombstone = pg.image.load(path.join(img_dir1, "Tombstone.png")).convert()
 #Creating groups for all sprites
 all_sprites = pg.sprite.Group()
 p2_bullets = pg.sprite.Group()
@@ -258,8 +259,8 @@ all_sprites.add(player1,player2)
 #Walls Option and Spawning from Andrew
 if WALLS == True:  
     for i in range(AMOUNT_WALLS): 
-        x = random.randint(0, WIDTH/20 - 1) * 20 + 10
-        y = random.randint(0, HEIGHT/20 - 1) * 20 + 10
+        x = random.randint(10, WIDTH/20 - 10) * 25
+        y = random.randint(0, HEIGHT/20 - 1) * 25 + 10
         wall = Wall(x, y, 1)
         wall_list.append(wall)
         walls.add(wall)
@@ -357,6 +358,18 @@ while running:
     all_sprites.draw(screen)
     p2_bullets.draw(screen)
     p1_bullets.draw(screen)
+    
+    
+    #Drawing Text
+    screen.blit(Tombstone, (10,10))
+    if PLAYER1_DEAD:
+        screen.blit(Tombstone, (player1.pos.x - 20,player1.pos.y - 10))
+        draw_text("Player 2 Wins!", 100, WHITE, WIDTH/2, HEIGHT/2)
+    if PLAYER2_DEAD:
+        screen.blit(Tombstone, (player1.pos.x - 20,player1.pos.y - 10))
+        draw_text("Player 1 Wins!", 100, WHITE, WIDTH/2, HEIGHT/2)
+    draw_text("P1", 10, WHITE, player1.pos.x, player1.pos.y - 25)
+    draw_text("P2", 10, WHITE, player2.pos.x, player2.pos.y - 25)
     # buffer - after drawing everything, flip display
     pg.display.flip()
     

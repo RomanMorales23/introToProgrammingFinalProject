@@ -1,7 +1,7 @@
 # game settings 
-WIDTH = 1280
-HEIGHT = 720
-FPS = 30
+WIDTH = 1900
+HEIGHT = 900
+FPS = 60
 # Game settings
 PLAYER_GRAV = 0.0
 PLAYER_FRIC = 0.5
@@ -17,7 +17,7 @@ JOY1_Location_Right = [0,0]
 #Player2 Contol Mapping
 JOY2_Location_Left = [0,0]
 JOY2_Location_Right = [0,0]
-Max_Wall_Length = 2
+Max_Wall_Length = 25
 WALLS = True
 AMOUNT_WALLS = 30
 #Savezone is the amount the character stay on the edge of the screen
@@ -25,7 +25,7 @@ SAFEZONE = 10
 #Joystick Deadzone
 DEADZONE = 0.01
 #Wall tolerance for Collisoin
-Collision_Tolerance = 8
+Collision_Tolerance = 10
 
 # define colors
 WHITE = (255, 255, 255)
@@ -44,3 +44,5 @@ SHOT_TIMER_1 = 0
 SHOT_TIMER_2 = 0
 BULLET_LIFESPAN = 150
 wall_list = []
+PLAYER1_DEAD = False
+PLAYER2_DEAD = False
