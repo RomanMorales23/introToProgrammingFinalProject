@@ -17,7 +17,7 @@ JOY1_Location_Right = [0,0]
 #Player2 Contol Mapping
 JOY2_Location_Left = [0,0]
 JOY2_Location_Right = [0,0]
-Max_Wall_Length = 25
+Max_Wall_Length = 5
 WALLS = True
 AMOUNT_WALLS = 30
 #Savezone is the amount the character stay on the edge of the screen

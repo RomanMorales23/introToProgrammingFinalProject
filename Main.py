@@ -138,16 +138,6 @@ class Player(Sprite):
             self.pos.x = 0 + SAFEZONE
         if self.pos.y < 0 + SAFEZONE:
             self.pos.y = 0 + SAFEZONE
-###############################################Platfroms###############################################
-class Platform(Sprite):
-    def __init__(self, x, y, w, h):
-        Sprite.__init__(self)
-        self.image = pg.Surface((w, h))
-        self.image.fill(RED)
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-
 ###############################################Projectile###############################################
 class Projectile(Sprite): 
     def __init__(self,w,h, player_num):
@@ -213,8 +203,8 @@ class Wall(Sprite):
         prevy = self.y
         if self.iterations == 1:
             for i in range(10):
-                x = prevx + random.choice([-1, 0, 1])
-                y = prevy + random.choice([-1, 0, 1])
+                x = prevx + random.choice([-25, 0, 25])
+                y = prevy + random.choice([-25, 0, 25])
                 prevx = x
                 prevy = y
                 wall = Wall(x, y, 0)
@@ -232,7 +222,6 @@ class Wall(Sprite):
 pg.init()
 pg.mixer.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
-pg.display.set_caption("My Game...")
 clock = pg.time.Clock()
   
 #Image Loading from Game Tutorials
@@ -260,6 +249,7 @@ Shoort = Projectile(100,100,1)
 all_sprites.add(player1,player2)
 
 #Walls Option and Spawning from Andrew
+
 if WALLS == True:  
     for i in range(AMOUNT_WALLS): 
         x = random.randint(10, WIDTH/20 - 10) * 25
@@ -275,7 +265,8 @@ running = True
 while running:
     # keep the loop running using clock
     clock.tick(FPS)
-
+    #Displays FPS in caption of window
+    pg.display.set_caption("FPS: " + str(int(clock.get_fps())))
     #From DaFluffyPotatoe:
     for event in pg.event.get():
         if event.type == JOYAXISMOTION:
@@ -349,9 +340,10 @@ while running:
             player2.pos.x = hits2[0].rect.right + 12.5
             player2.vel.x = 0
 
-    #background 
-    screen.blit(Background, (player1.pos.x - 20,player1.pos.y - 10))
-
+    #Preparing Images 
+    Scaled_Background = pg.transform.scale(Background, (WIDTH/2, HEIGHT))
+    Scaled_Tombstone = pg.transform.scale(Tombstone, (35,35))
+    Tombstone.set_colorkey(COLORKEY)
     
     ############ Update ##############
     # update all sprites
@@ -361,7 +353,8 @@ while running:
     # draw the background screen
     screen.fill(GREY)
     # draw all sprites
-    screen.blit(Background, (0,0))
+    screen.blit(Scaled_Background, (0,0))
+    screen.blit(Scaled_Background, (WIDTH/2, 0))
     all_sprites.draw(screen)
     p2_bullets.draw(screen)
     p1_bullets.draw(screen)
@@ -369,20 +362,19 @@ while running:
     
     
     #Drawing Tombstone & Text
-    Scaled_Tombstone = pg.transform.scale(Tombstone, (35,35))
-    Tombstone.set_colorkey(COLORKEY)
+
     if PLAYER1_DEAD:
         screen.blit(Scaled_Tombstone, (player1.pos.x - 20,player1.pos.y - 10))
-        draw_text("P1", 10, BLACK, player1.pos.x + 2, player1.pos.y - 5)
+        draw_text("P1", 10, BLACK, player1.pos.x, player1.pos.y - 5)
         draw_text("Player 2 Wins!", 100, WHITE, WIDTH/2, HEIGHT/2)
     else:
-       draw_text("P1", 10, WHITE, player1.pos.x, player1.pos.y - 25) 
+       draw_text("P1", 10, WHITE, player1.pos.x, player1.pos.y - 30) 
     if PLAYER2_DEAD:
         screen.blit(Scaled_Tombstone, (player2.pos.x - 20,player2.pos.y - 10))
-        draw_text("P2", 10, BLACK, player2.pos.x + 2, player2.pos.y - 5)
+        draw_text("P2", 10, BLACK, player2.pos.x, player2.pos.y - 5)
         draw_text("Player 1 Wins!", 100, WHITE, WIDTH/2, HEIGHT/2)
     else:
-        draw_text("P2", 10, WHITE, player2.pos.x, player2.pos.y - 25)
+        draw_text("P2", 10, WHITE, player2.pos.x, player2.pos.y - 30)
     
     
     # buffer - after drawing everything, flip display
