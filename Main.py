@@ -49,11 +49,11 @@ class Player(Sprite):
         if player_num ==1: 
             self.original_image = player1_img
             self.original_image = pg.transform.scale(player1_img, (w, h))
-            self.pos = vec(WIDTH/2, HEIGHT/2)
+            self.pos = vec( 25, HEIGHT/2)
         if player_num == 2:
             self.original_image = player2_img
             self.original_image = pg.transform.scale(player2_img, (w, h))
-            self.pos = vec(WIDTH/2 - 20, HEIGHT/2 - 20)
+            self.pos = vec(WIDTH - 25, HEIGHT/2)
         self.original_image.set_colorkey(COLORKEY)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH/2, HEIGHT/2)
@@ -188,9 +188,9 @@ class Projectile(Sprite):
 
 #Courtesy of Andrew:
 class Wall(Sprite):
-    def __init__(self, x, y, iterations):
+    def __init__(self, x, y, iterations, health):
         Sprite.__init__(self)
-        self.image = pg.Surface((25, 25))
+        self.image = pg.Surface((35, 35))
         self.image.fill(GREY)
         self.image = Walls_Img
         self.rect = self.image.get_rect()
@@ -198,24 +198,33 @@ class Wall(Sprite):
         self.x = x
         self.y = y
         self.iterations = iterations
+        self.health = health
     
     def update(self):
         prevx = self.x
         prevy = self.y
+        if self.health <= 2:
+            self.image = Walls2_Img
+        if self.health <= 1:
+            self.image = Walls3_Img
         if self.iterations == 1:
             for i in range(10):
-                x = prevx + random.choice([-25, 0, 25])
-                y = prevy + random.choice([-25, 0, 25])
+                x = prevx + random.choice([-35, 0, 35])
+                y = prevy + random.choice([-35, 0, 35])
                 prevx = x
                 prevy = y
-                wall = Wall(x, y, 0)
+                wall = Wall(x, y, 0, WALL_HEALTH)
                 wall_list.append(wall)
                 walls.add(wall)
                 all_sprites.add(wall)
             self.kill()
-        #Kills Bullets upon touching wall
-        pg.sprite.spritecollide(self, p1_bullets, True)
-        pg.sprite.spritecollide(self, p2_bullets, True)
+        #Kills Bullets upon touching wall and Damages Wall
+        if self.health <= 0:
+            self.kill()
+        if pg.sprite.spritecollide(self, p1_bullets, True) or pg.sprite.spritecollide(self, p2_bullets, True):
+            self.health -= 1
+
+
 
 
 
@@ -235,6 +244,8 @@ player2_img = pg.image.load(path.join(img_dir1, "player_orange.png")).convert()
 Tombstone = pg.image.load(path.join(img_dir1, "Tombstone.png")).convert()
 Background = pg.image.load(path.join(img_dir1, "Background.png")).convert()
 Walls_Img = pg.image.load(path.join(img_dir1, "Wall.png")).convert()
+Walls2_Img = pg.image.load(path.join(img_dir1, "Wall2.png")).convert()
+Walls3_Img = pg.image.load(path.join(img_dir1, "Wall3.png")).convert()
 
 #Creating groups for all sprites
 all_sprites = pg.sprite.Group()
@@ -255,9 +266,9 @@ all_sprites.add(player1,player2)
 
 if WALLS == True:  
     for i in range(AMOUNT_WALLS): 
-        x = random.randint(10, WIDTH/20 - 10) * 25
-        y = random.randint(0, HEIGHT/20 - 1) * 25 + 10
-        wall = Wall(x, y, 1)
+        x = random.randint(8, 45) * 35
+        y = random.randint(0, 25) * 35
+        wall = Wall(x, y, 1, WALL_HEALTH)
         wall_list.append(wall)
         walls.add(wall)
         all_sprites.add(wall)
