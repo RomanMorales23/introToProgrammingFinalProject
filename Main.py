@@ -13,6 +13,7 @@ Misc Help - Andrew :|
 import sys
 import os
 from os import path
+import time
 
 #Importing Pygame Libraries
 import pygame as pg
@@ -22,7 +23,6 @@ from pygame.locals import *
 #Importing Math Related Libraries for input and vector Calculations 
 import math
 import random
-from random import randint
 
 #Created Libraries
 from Settings import *
@@ -44,7 +44,7 @@ class Player(Sprite):
     def __init__(self, w, h, direction, player_num):
         Sprite.__init__(self)  
         self.player_num = player_num      
-        self.image = pg.Surface((35, 23))
+        self.image = pg.Surface((w, h))
         #Differentiates Images For Player 1 & 2
         if player_num ==1: 
             self.original_image = player1_img
@@ -54,8 +54,9 @@ class Player(Sprite):
             self.original_image = player2_img
             self.original_image = pg.transform.scale(player2_img, (w, h))
             self.pos = vec(WIDTH - 25, HEIGHT/2)
+        #Uses specified color key to sortout background of Sprite
         self.original_image.set_colorkey(COLORKEY)
-        self.rect = self.image.get_rect()
+        self.rect = self.original_image.get_rect()
         self.rect.center = (WIDTH/2, HEIGHT/2)
         self.player_num = player_num
         self.vel = vec(0,0)
@@ -151,15 +152,16 @@ class Projectile(Sprite):
         self.vel = vec(5,0)
 
         if player_num == 1:
-            self.rect.center = (player1.pos.x, player1.pos.y)
-            self.pos = vec(player1.pos.x, player1.pos.y)
+            #Sets bullet position to player position, but accounts for offset of gun barrel from center of player 
+            self.rect.center = (player1.pos.x + math.cos(player1.direction + math.radians(90)) * 7, player1.pos.y - math.sin(player1.direction - math.radians(90)) * 7)
+            self.pos = vec(self.rect.center)
 
             #Turns Cordinates of joystick into Direction for Player
             self.vel = vec(math.cos(player1.direction) * BULLET_SPEED,math.sin(player1.direction)* BULLET_SPEED)
 
         if player_num == 2:
-            self.rect.center = (player2.pos.x, player2.pos.y)
-            self.pos = vec(player2.pos.x, player2.pos.y)
+            self.rect.center = (player2.pos.x + math.cos(player2.direction + math.radians(90)) * 7, player2.pos.y - math.sin(player2.direction - math.radians(90)) * 7)
+            self.pos = vec(self.rect.center)
 
             #Turns Cordinates of joystick into Direction for Player
             self.vel = vec(math.cos(player2.direction) * BULLET_SPEED,math.sin(player2.direction)* BULLET_SPEED)
@@ -233,7 +235,8 @@ pg.init()
 pg.mixer.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 clock = pg.time.Clock()
-  
+
+
 #Image Loading from Game Tutorials
 game_folder = os.path.dirname(__file__)
 img_dir1 = os.path.join(game_folder, 'images')
@@ -255,15 +258,14 @@ p1_bullets = pg.sprite.Group()
 
 
 #Instantiate classes
-player1 = Player(41, 40, 0,1)
-player2 = Player(41, 40, 0,2)
+player1 = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 0,1)
+player2 = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 180,2)
 Shoort = Projectile(100,100,1)
 
 #Ddd player to all sprites grousp
 all_sprites.add(player1,player2)
 
 #Walls Option and Spawning from Andrew
-
 if WALLS == True:  
     for i in range(AMOUNT_WALLS): 
         x = random.randint(8, 45) * 35
@@ -320,39 +322,77 @@ while running:
         #Check for closed window and stops RUNNING loop
         if event.type == pg.QUIT:
             running = False
-    
+
 
     #Collision Detection for Walls vs Player
     hits1 = pg.sprite.spritecollide(player1, walls, False)
     hits2 = pg.sprite.spritecollide(player2, walls, False)
         #Player 1
-    if hits1:
+    if hits1: 
+        ''' 
+            This collision section requies a duplication to prevent player sliding through
+            wall if they were already touching another wall. This section checks collision 
+            with UP TO 2 wall, the maximum needed in my case.
+        '''
         if abs(player1.rect.top - hits1[0].rect.bottom) < Collision_Tolerance: 
-            player1.pos.y = hits1[0].rect.bottom + 9.5
+            player1.pos.y = hits1[0].rect.bottom + (abs(player1.rect.top-player1.pos.y)) - 2
             player1.vel.y = 0
         if abs(player1.rect.bottom - hits1[0].rect.top) < Collision_Tolerance: 
-            player1.pos.y = hits1[0].rect.top - 9.5
+            player1.pos.y = hits1[0].rect.top - (abs(player1.rect.bottom-player1.pos.y)) + 2 
             player1.vel.y = 0
         if abs(player1.rect.right - hits1[0].rect.left) < Collision_Tolerance: 
-            player1.pos.x = hits1[0].rect.left - 12.5
+            player1.pos.x = hits1[0].rect.left - (abs(player1.rect.right-player1.pos.x))
             player1.vel.x = 0
         if abs(player1.rect.left - hits1[0].rect.right) < Collision_Tolerance: 
-            player1.pos.x = hits1[0].rect.right + 12.5
+            player1.pos.x = hits1[0].rect.right + (abs(player1.rect.left-player1.pos.x))
             player1.vel.x = 0
+
+        try:
+            if abs(player1.rect.top - hits1[1].rect.bottom) < Collision_Tolerance: 
+                player1.pos.y = hits1[1].rect.bottom + (abs(player1.rect.top-player1.pos.y)) - 2
+                player1.vel.y = 0
+            if abs(player1.rect.bottom - hits1[1].rect.top) < Collision_Tolerance: 
+                player1.pos.y = hits1[1].rect.top - (abs(player1.rect.bottom-player1.pos.y)) + 2
+                player1.vel.y = 0
+            if abs(player1.rect.right - hits1[1].rect.left) < Collision_Tolerance: 
+                player1.pos.x = hits1[1].rect.left - (abs(player1.rect.right-player1.pos.x))
+                player1.vel.x = 0
+            if abs(player1.rect.left - hits1[1].rect.right) < Collision_Tolerance: 
+                player1.pos.x = hits1[1].rect.right + (abs(player1.rect.left-player1.pos.x))
+                player1.vel.x = 0
+        except:
+            pass #prevents crashing if player is only touching one wall
+            
         #Player 2
     if hits2:
         if abs(player2.rect.top - hits2[0].rect.bottom) < Collision_Tolerance: 
-            player2.pos.y = hits2[0].rect.bottom + 9.5
+            player2.pos.y = hits2[0].rect.bottom + (abs(player2.rect.top-player2.pos.y)) - 2
             player2.vel.y = 0
         if abs(player2.rect.bottom - hits2[0].rect.top) < Collision_Tolerance: 
-            player2.pos.y = hits2[0].rect.top - 9.5
+            player2.pos.y = hits2[0].rect.top - (abs(player2.rect.bottom-player2.pos.y)) + 2 
             player2.vel.y = 0
         if abs(player2.rect.right - hits2[0].rect.left) < Collision_Tolerance: 
-            player2.pos.x = hits2[0].rect.left - 12.5
+            player2.pos.x = hits2[0].rect.left - (abs(player2.rect.right-player2.pos.x))
             player2.vel.x = 0
         if abs(player2.rect.left - hits2[0].rect.right) < Collision_Tolerance: 
-            player2.pos.x = hits2[0].rect.right + 12.5
+            player2.pos.x = hits2[0].rect.right + (abs(player2.rect.left-player2.pos.x))
             player2.vel.x = 0
+
+        try:
+            if abs(player2.rect.top - hits2[1].rect.bottom) < Collision_Tolerance: 
+                player2.pos.y = hits2[1].rect.bottom + (abs(player2.rect.top-player2.pos.y)) - 2
+                player2.vel.y = 0
+            if abs(player2.rect.bottom - hits2[1].rect.top) < Collision_Tolerance: 
+                player2.pos.y = hits2[1].rect.top - (abs(player2.rect.bottom-player2.pos.y)) + 2
+                player2.vel.y = 0
+            if abs(player2.rect.right - hits2[1].rect.left) < Collision_Tolerance: 
+                player2.pos.x = hits2[1].rect.left - (abs(player2.rect.right-player2.pos.x))
+                player2.vel.x = 0
+            if abs(player2.rect.left - hits2[1].rect.right) < Collision_Tolerance: 
+                player2.pos.x = hits2[1].rect.right + (abs(player2.rect.left-player2.pos.x))
+                player2.vel.x = 0
+        except:
+            pass #prevents crashing if player is only touching one wall
 
     #Preparing Images 
     Scaled_Background = pg.transform.scale(Background, (WIDTH/2, HEIGHT))
