@@ -1,6 +1,10 @@
+from screeninfo import get_monitors 
+import math
+for m in get_monitors():
+    print(str(m.width))
 # Window settings 
-WIDTH = 1900
-HEIGHT = 900
+WIDTH = m.width
+HEIGHT = m.height
 FPS = 60
 # Game settings
 PLAYER_GRAV = 0.0
@@ -14,8 +18,8 @@ CAN_DIE = True
 WALL_HEALTH = 3
 BULLET_LIFESPAN = 150
 
-PLAYER_HEIGHT = 15
-PLAYER_WIDTH = 21
+PLAYER_HEIGHT = math.ceil(2*0.0116666 *WIDTH)
+PLAYER_WIDTH = math.ceil(2*0.0233333 *HEIGHT)
 #Wall Settings
 Max_Wall_Length = 5
 WALLS = True

@@ -192,7 +192,7 @@ class Projectile(Sprite):
 class Wall(Sprite):
     def __init__(self, x, y, iterations, health):
         Sprite.__init__(self)
-        self.image = pg.Surface((35, 35))
+        self.image = pg.Surface((math.ceil(HEIGHT* 0.03888888), math.ceil(HEIGHT* 0.03888888)))
         self.image.fill(GREY)
         self.image = Walls_Img
         self.rect = self.image.get_rect()
@@ -233,6 +233,7 @@ class Wall(Sprite):
 #Init pygame and create a window
 pg.init()
 pg.mixer.init()
+
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 clock = pg.time.Clock()
 
@@ -332,7 +333,7 @@ while running:
         ''' 
             This collision section requies a duplication to prevent player sliding through
             wall if they were already touching another wall. This section checks collision 
-            with UP TO 2 wall, the maximum needed in my case.
+            with UP TO 2 wallS, the maximum needed in my case.
         '''
         if abs(player1.rect.top - hits1[0].rect.bottom) < Collision_Tolerance: 
             player1.pos.y = hits1[0].rect.bottom + (abs(player1.rect.top-player1.pos.y)) - 2
