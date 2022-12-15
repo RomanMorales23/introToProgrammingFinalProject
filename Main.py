@@ -192,9 +192,9 @@ class Projectile(Sprite):
 class Wall(Sprite):
     def __init__(self, x, y, iterations, health):
         Sprite.__init__(self)
-        self.image = pg.Surface((math.ceil(HEIGHT* 0.03888888), math.ceil(HEIGHT* 0.03888888)))
+        self.image = pg.Surface((WALL_SIZE, WALL_SIZE))
         self.image.fill(GREY)
-        self.image = pg.transform.scale(Walls_Img, ((math.ceil(HEIGHT* 0.03888888)), (math.ceil(HEIGHT* 0.03888888))))
+        self.image = pg.transform.scale(Walls_Img, ((WALL_SIZE, WALL_SIZE)))
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.x = x
@@ -206,13 +206,13 @@ class Wall(Sprite):
         prevx = self.x
         prevy = self.y
         if self.health <= 2:
-            self.image = pg.transform.scale(Walls2_Img, ((math.ceil(HEIGHT* 0.03888888)), (math.ceil(HEIGHT* 0.03888888))))
+            self.image = pg.transform.scale(Walls2_Img, (WALL_SIZE, WALL_SIZE))
         if self.health <= 1:
-            self.image = pg.transform.scale(Walls3_Img, ((math.ceil(HEIGHT* 0.03888888)), (math.ceil(HEIGHT* 0.03888888))))
+            self.image = pg.transform.scale(Walls3_Img, (WALL_SIZE, WALL_SIZE))
         if self.iterations == 1:
             for i in range(10):
-                x = prevx + random.choice([-35,0,35])
-                y = prevy + random.choice([-35,0,35])
+                x = prevx + random.choice([-WALL_SIZE,0,WALL_SIZE])
+                y = prevy + random.choice([-WALL_SIZE,0,WALL_SIZE])
                 prevx = x
                 prevy = y
                 wall = Wall(x, y, 0, WALL_HEALTH)
@@ -267,14 +267,14 @@ Shoort = Projectile(100,100,1)
 all_sprites.add(player1,player2)
 
 #Walls Option and Spawning from Andrew
-if WALLS == True:  
-    for i in range(AMOUNT_WALLS): 
-        x = random.randint(8, 45) * 35
-        y = random.randint(0, 25) * 35
-        wall = Wall(x, y, 1, WALL_HEALTH)
+if WALLS == True:
+    for i in range (AMOUNT_WALLS):
+        x= random.randint(3, math.floor(WIDTH/WALL_SIZE)) * WALL_SIZE
+        y= random.randint(0, math.floor(HEIGHT/WALL_SIZE)) * WALL_SIZE
+        wall = Wall(x,y, 1, WALL_HEALTH)
         wall_list.append(wall)
-        walls.add(wall)
-        all_sprites.add(wall)
+        walls.add(wall)        
+        all_sprites.add(wall) 
 
 
 # Game loop

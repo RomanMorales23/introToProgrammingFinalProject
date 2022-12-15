@@ -1,7 +1,8 @@
 from screeninfo import get_monitors 
 import math
 for m in get_monitors():
-    print(str(m.width))
+    print("Monitor Width: " + str(m.width))
+    print("Monitor Height: " + str(m.height))
 # Window settings 
 WIDTH = m.width
 HEIGHT = m.height
@@ -18,12 +19,14 @@ CAN_DIE = True
 WALL_HEALTH = 3
 BULLET_LIFESPAN = 150
 
-PLAYER_HEIGHT = math.ceil(2*0.0116666 *WIDTH)
-PLAYER_WIDTH = math.ceil(2*0.0233333 *HEIGHT)
+PLAYER_HEIGHT = math.ceil(2*0.0116666 *WIDTH * 0.9)
+PLAYER_WIDTH = math.ceil(2*0.0233333 *HEIGHT * 0.9)
+
+WALL_SIZE = math.ceil(0.028888888 * WIDTH)
 #Wall Settings
 Max_Wall_Length = 5
 WALLS = True
-AMOUNT_WALLS = 60
+AMOUNT_WALLS = 50
 #Savezone is the amount the character stay on the edge of the screen
 SAFEZONE = 10
 #Joystick Deadzone to prevent drifting and the stick tention bouncing it to the otherside
@@ -57,4 +60,7 @@ JOY1_Location_Right = [0,0]
 #Player2 Contol Mapping
 JOY2_Location_Left = [0,0]
 JOY2_Location_Right = [0,0]
+
+
+
 
