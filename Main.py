@@ -1,7 +1,5 @@
 '''
 Citations: 
-
-
 Rect Collision with better accuracy - https://www.youtube.com/watch?v=1_H7InPMjaY&ab_channel=ClearCode
 Controller Input - DaFluffyPotateo on YT: https://www.youtube.com/watch?v=Hp0M8iExfDc&ab_channel=DaFluffyPotato
 Pygame Docuementation - https://www.pygame.org/docs/
@@ -62,7 +60,6 @@ class Player(Sprite):
         self.vel = vec(0,0)
         self.acc = vec(0,0)
         self.direction = math.radians(direction)
-    #Controls altered to use a direction and magnitude instead of individual x and y inputs 
     def controls(self):
         #Differentiates Controls for Player 1 & 2
         if self.player_num == 1:
@@ -70,6 +67,7 @@ class Player(Sprite):
                 self.vel.y = JOY1_Location_Left[1] * SPEED
             if abs(JOY1_Location_Left[0]) > DEADZONE:
                 self.vel.x = JOY1_Location_Left[0] * SPEED
+            #Uses Inv. Tangent to calculate direction from two coordinates 
             if abs(JOY1_Location_Right[0]) > DEADZONE:
                 if JOY1_Location_Right[0] > 0:
                     self.direction = math.atan((JOY1_Location_Right[1] / JOY1_Location_Right[0]))
@@ -80,6 +78,7 @@ class Player(Sprite):
                 self.vel.y = JOY2_Location_Left[1] * SPEED
             if abs(JOY2_Location_Left[0]) > DEADZONE:
                 self.vel.x = JOY2_Location_Left[0] * SPEED
+            #Uses Inv. Tangent to calculate direction from two coordinates 
             if abs(JOY2_Location_Right[0]) > DEADZONE:
                 if JOY2_Location_Right[0] > 0:
                     self.direction = math.atan((JOY2_Location_Right[1] / JOY2_Location_Right[0]))
@@ -149,6 +148,7 @@ class Projectile(Sprite):
         self.player_num = player_num
         #Divides Porjectile Class by Player Number to seperate spawning and interaction
 
+
         if player_num == 1:
             #Sets bullet position to player position, but accounts for offset of gun barrel from center of player 
             self.rect.center = (player1.pos.x + math.cos(player1.direction + math.radians(90)) * 7, player1.pos.y - math.sin(player1.direction - math.radians(90)) * 7)
@@ -203,10 +203,12 @@ class Wall(Sprite):
     def update(self):
         prevx = self.x
         prevy = self.y
+        #Switches images of Barriors depending on health
         if self.health <= 2:
             self.image = pg.transform.scale(Walls2_Img, (WALL_SIZE, WALL_SIZE))
         if self.health <= 1:
             self.image = pg.transform.scale(Walls3_Img, (WALL_SIZE, WALL_SIZE))
+        #Wall Spawning
         if self.iterations == 1:
             for i in range(10):
                 x = prevx + random.choice([-WALL_SIZE,0,WALL_SIZE])
@@ -234,15 +236,11 @@ class Wall(Sprite):
 #Init pygame and create a window
 pg.init()
 pg.mixer.init()
-
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 clock = pg.time.Clock()
-
-
 #Image Loading from Game Tutorials
 game_folder = os.path.dirname(__file__)
 img_dir1 = os.path.join(game_folder, 'images')
-
 #Image Loading (Andrew)
 player1_img = pg.image.load(path.join(img_dir1, "player_blue.png")).convert()
 player2_img = pg.image.load(path.join(img_dir1, "player_orange.png")).convert()
@@ -251,20 +249,16 @@ Background = pg.image.load(path.join(img_dir1, "Background.png")).convert()
 Walls_Img = pg.image.load(path.join(img_dir1, "Wall.png")).convert()
 Walls2_Img = pg.image.load(path.join(img_dir1, "Wall2.png")).convert()
 Walls3_Img = pg.image.load(path.join(img_dir1, "Wall3.png")).convert()
-
 #Creating groups for all sprites
 all_sprites = pg.sprite.Group()
 p2_bullets = pg.sprite.Group()
 walls = pg.sprite.Group()
 p1_bullets = pg.sprite.Group()
-
-
 #Instantiate classes
 player1 = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 0,1)
 player2 = Player(PLAYER_WIDTH, PLAYER_HEIGHT, 180,2)
 Shoort = Projectile(100,100,1)
-
-#Ddd player to all sprites grousp
+#Add player to all sprites grousp
 all_sprites.add(player1,player2)
 
 #Walls Option and Spawning from Andrew
@@ -276,7 +270,6 @@ if WALLS == True:
         wall_list.append(wall)
         walls.add(wall)        
         all_sprites.add(wall) 
-
 
 # Game loop
 running = True
