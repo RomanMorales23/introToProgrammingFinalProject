@@ -90,7 +90,7 @@ class Player(Sprite):
         global SHOT_TIMER_1
         if SHOT_TIMER_1 > 5:
             if PLAYER1_DEAD == False:
-                pew = (Projectile(2,2, 1)) 
+                pew = (Projectile(BULLET_SIZE,BULLET_SIZE, 1)) 
                 p1_bullets.add(pew)
                 all_sprites.add(pew)  
                 SHOT_TIMER_1 = 0
@@ -98,7 +98,7 @@ class Player(Sprite):
         global SHOT_TIMER_2
         if SHOT_TIMER_2 > 5:
             if PLAYER2_DEAD == False:
-                pew = Projectile(2,2, 2)
+                pew = Projectile(BULLET_SIZE,BULLET_SIZE, 2)
                 p2_bullets.add(pew)
                 all_sprites.add(pew)
                 SHOT_TIMER_2 = 0     
@@ -148,8 +148,6 @@ class Projectile(Sprite):
         self.rect = self.image.get_rect()
         self.player_num = player_num
         #Divides Porjectile Class by Player Number to seperate spawning and interaction
-        #self.pos = vec(100,100)
-        self.vel = vec(5,0)
 
         if player_num == 1:
             #Sets bullet position to player position, but accounts for offset of gun barrel from center of player 
@@ -290,7 +288,6 @@ while running:
     #From DaFluffyPotatoe:
     for event in pg.event.get():
         if event.type == JOYAXISMOTION:
-            
             #Player 1  Controls
             if event.joy == 1:
                 if event.axis == 5:
