@@ -148,7 +148,7 @@ class Projectile(Sprite):
         self.rect = self.image.get_rect()
         self.player_num = player_num
         #Divides Porjectile Class by Player Number to seperate spawning and interaction
-        self.pos = vec(100,100)
+        #self.pos = vec(100,100)
         self.vel = vec(5,0)
 
         if player_num == 1:
@@ -431,7 +431,7 @@ while running:
     else:
         draw_text("P2", 10, WHITE, player2.pos.x, player2.pos.y - 30)
     
-    
+    draw_text(" Press ESC to close Window", 15, WHITE, 150, 5)
     # buffer - after drawing everything, flip display
     pg.display.flip()
     
