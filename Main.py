@@ -194,7 +194,7 @@ class Wall(Sprite):
         Sprite.__init__(self)
         self.image = pg.Surface((math.ceil(HEIGHT* 0.03888888), math.ceil(HEIGHT* 0.03888888)))
         self.image.fill(GREY)
-        self.image = Walls_Img
+        self.image = pg.transform.scale(Walls_Img, ((math.ceil(HEIGHT* 0.03888888)), (math.ceil(HEIGHT* 0.03888888))))
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.x = x
@@ -206,13 +206,13 @@ class Wall(Sprite):
         prevx = self.x
         prevy = self.y
         if self.health <= 2:
-            self.image = Walls2_Img
+            self.image = pg.transform.scale(Walls2_Img, ((math.ceil(HEIGHT* 0.03888888)), (math.ceil(HEIGHT* 0.03888888))))
         if self.health <= 1:
-            self.image = Walls3_Img
+            self.image = pg.transform.scale(Walls3_Img, ((math.ceil(HEIGHT* 0.03888888)), (math.ceil(HEIGHT* 0.03888888))))
         if self.iterations == 1:
             for i in range(10):
-                x = prevx + random.choice([-35, 0, 35])
-                y = prevy + random.choice([-35, 0, 35])
+                x = prevx + random.choice([-35,0,35])
+                y = prevy + random.choice([-35,0,35])
                 prevx = x
                 prevy = y
                 wall = Wall(x, y, 0, WALL_HEALTH)
