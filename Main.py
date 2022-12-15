@@ -188,7 +188,7 @@ class Projectile(Sprite):
 
 ###############################################Walls###############################################
 
-#Courtesy of Andrew:
+#Courtesy of Andrew and Edited by Me:
 class Wall(Sprite):
     def __init__(self, x, y, iterations, health):
         Sprite.__init__(self)
@@ -225,6 +225,9 @@ class Wall(Sprite):
             self.kill()
         if pg.sprite.spritecollide(self, p1_bullets, True) or pg.sprite.spritecollide(self, p2_bullets, True):
             self.health -= 1
+        #Prevents Wall SPawning on Player
+        if self.x < 250 or self.x > (WIDTH-250): 
+            self.kill()
 
 
 

@@ -19,9 +19,9 @@ CAN_DIE = True
 WALL_HEALTH = 3
 BULLET_LIFESPAN = 150
 
+#Decimals are percentge of screen widths to allow sprites to scale approprietly with Screen Size
 PLAYER_HEIGHT = math.ceil(2*0.0116666 *WIDTH * 0.9)
 PLAYER_WIDTH = math.ceil(2*0.0233333 *HEIGHT * 0.9)
-
 WALL_SIZE = math.ceil(0.028888888 * WIDTH)
 #Wall Settings
 Max_Wall_Length = 5
