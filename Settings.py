@@ -5,8 +5,8 @@ for m in get_monitors():
     print("Monitor Height: " + str(m.height))
 # Window settings 
 WIDTH = m.width
-HEIGHT = m.height
-FPS = 60
+HEIGHT = m.height - 60
+FPS = 60                                                   
 # Game settings
 PLAYER_GRAV = 0.0
 PLAYER_FRIC = 0.5
@@ -56,10 +56,10 @@ wall_list = []
 PLAYER1_DEAD = False
 PLAYER2_DEAD = False
 
-#Player1 Control Mapping
+#Player1 Joystick Mapping
 JOY1_Location_Left = [0,0]
 JOY1_Location_Right = [0,0]
-#Player2 Contol Mapping
+#Player2 Joystick Mapping
 JOY2_Location_Left = [0,0]
 JOY2_Location_Right = [0,0]
 
